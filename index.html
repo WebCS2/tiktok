@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1372,6 +1371,64 @@
       }
 
       if (!file) {
+        toast('Choose a video file first.');
+        return;
+      }
+
+      if (!file.type.startsWith('video/')) {
+        toast('File must be a video.');
+        return;
+      }
+
+      // preview upload UI
+      toast('Uploading...');
+
+      try {
+        const uniqueName = `${Date.now()}_${file.name}`.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const storageRef = storage.ref(`videos/${state.user.uid}/${uniqueName}`);
+
+        const uploadTask = storageRef.put(file);
+
+        uploadTask.on('state_changed', (snap) => {
+          const progress = (snap.bytesTransferred / snap.totalBytes) * 100;
+          els.feedModeLabel().textContent = `Uploading ${progress.toFixed(0)}%`;
+        });
+
+        await uploadTask;
+
+        const url = await storageRef.getDownloadURL();
+
+        const post = {
+          url,
+          caption,
+          user: state.username,
+          uid: state.user.uid,
+          email: state.email || state.user.email || '',
+          createdAt: Date.now(),
+          fileName: file.name,
+          fileType: file.type,
+          size: file.size
+        };
+
+        const newRef = await db.ref('videos').push(post);
+
+        // instantly show without reload
+        state.videos.unshift({ id: newRef.key, ...post });
+        renderFeed(state.videos);
+
+        toast('Video uploaded!');
+
+        els.captionInput().value = '';
+        els.videoFile().value = '';
+
+        await updateCounts();
+        els.feedModeLabel().textContent = state.myVideos ? 'My videos' : 'Global feed';
+
+      } catch (error) {
+        console.error(error);
+        toast('Upload failed. Check Firebase rules/storage.');
+      }
+    }if (!file) {
         toast('Choose a video file first.');
         return;
       }
