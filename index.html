@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1080,7 +1081,7 @@
       authDomain: "official234882848283848588hum1.firebaseapp.com",
       databaseURL: "https://official234882848283848588hum1-default-rtdb.firebaseio.com",
       projectId: "official234882848283848588hum1",
-      storageBucket: "official234882848283848588hum1.firebasestorage.app",
+      storageBucket: "official234882848283848588hum1.appspot.com",
       messagingSenderId: "802241414269",
       appId: "1:802241414269:web:2336b944e218f3d27add14",
       measurementId: "G-QJ7QVEVT5F"
@@ -1191,19 +1192,34 @@
       return snap.exists();
     }
 
-    async function usernameBelongsToUid(lowerUsername, uid) {
-      const snap = await db.ref(`usernames/${lowerUsername}`).get();
-      if (!snap.exists()) return false;
-      return snap.val() === uid;
+    async function getUserProfile(uid) {
+      const snap = await db.ref(`users/${uid}`).get();
+      return snap.exists() ? snap.val() : null;
+    }
+
+    async function saveUserProfile(uid, email, username) {
+      const payload = {
+        uid,
+        email: email || '',
+        username: normalizeUsername(username),
+        createdAt: Date.now()
+      };
+
+      await Promise.all([
+        db.ref(`users/${uid}`).set(payload),
+        db.ref(`usernames/${normalizeUsername(username)}`).set({
+          uid,
+          username: normalizeUsername(username),
+          email: email || '',
+          createdAt: Date.now()
+        })
+      ]);
     }
 
     async function findUsernameByUid(uid) {
-      const snap = await db.ref('usernames').orderByValue().equalTo(uid).get();
-      let found = null;
-      snap.forEach(child => {
-        found = child.key;
-      });
-      return found;
+      const profile = await getUserProfile(uid);
+      if (profile && profile.username) return normalizeUsername(profile.username);
+      return decodeURIComponent(getCookie('sessionUsername') || '') || null;
     }
 
     async function signup() {
@@ -1234,19 +1250,19 @@
       }
 
       try {
+        await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
         const cred = await auth.createUserWithEmailAndPassword(email, password);
-        await db.ref(`usernames/${lowerUsername}`).set({
-          uid: cred.user.uid,
-          username: lowerUsername,
-          createdAt: Date.now(),
-          email: cred.user.email || email
-        });
+
+        await saveUserProfile(cred.user.uid, cred.user.email || email, lowerUsername);
+
         setCookie('sessionEmail', cred.user.email || email);
         setCookie('sessionUsername', lowerUsername);
         setCookie('sessionUid', cred.user.uid);
+
         state.user = cred.user;
         state.username = lowerUsername;
         state.email = cred.user.email || email;
+
         toast('Account created and username claimed.');
         await enterApp();
       } catch (error) {
@@ -1265,18 +1281,34 @@
       }
 
       try {
+        await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
         const cred = await auth.signInWithEmailAndPassword(email, password);
-        const username = await findUsernameByUid(cred.user.uid);
+
+        let profile = await getUserProfile(cred.user.uid);
+        let username = profile?.username ? normalizeUsername(profile.username) : null;
+
         if (!username) {
-          toast('No username claim found. Please sign up again or check your database.');
+          const cookieUsername = decodeURIComponent(getCookie('sessionUsername') || '');
+          if (cookieUsername) username = normalizeUsername(cookieUsername);
+        }
+
+        if (!username) {
+          toast('No username found for this account.');
           return;
         }
+
+        if (!profile) {
+          await saveUserProfile(cred.user.uid, cred.user.email || email, username);
+        }
+
         state.user = cred.user;
         state.username = username;
         state.email = cred.user.email || email;
+
         setCookie('sessionEmail', state.email);
         setCookie('sessionUsername', username);
         setCookie('sessionUid', cred.user.uid);
+
         toast('Logged in successfully.');
         await enterApp();
       } catch (error) {
@@ -1312,9 +1344,9 @@
     }
 
     async function updateCounts() {
-      const [postsSnap, claimSnap] = await Promise.all([
+      const [postsSnap, profile] = await Promise.all([
         db.ref('videos').get(),
-        db.ref(`usernames/${normalizeUsername(state.username)}`).get()
+        state.user ? getUserProfile(state.user.uid) : Promise.resolve(null)
       ]);
 
       let totalPosts = 0;
@@ -1327,7 +1359,7 @@
 
       els.statPosts().textContent = String(myPosts);
       els.statUploads().textContent = String(totalPosts);
-      els.statClaims().textContent = claimSnap.exists() ? '1' : '0';
+      els.statClaims().textContent = profile && profile.username ? '1' : '0';
     }
 
     async function uploadVideo() {
