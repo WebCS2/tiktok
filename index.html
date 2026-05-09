@@ -1,2209 +1,620 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mini TikTok Clone</title>
+  <meta charset="utf-8" />
+  <title>MiniTik - Single File</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    :root {
-      --bg: #000;
-      --panel: #111;
-      --panel-2: #181818;
-      --text: #fff;
-      --muted: #aaaaaa;
-      --accent: #ff0050;
-      --border: #2a2a2a;
-      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-      --radius: 18px;
-      --radius-sm: 12px;
-      --max-width: 480px;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      min-height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      overflow-x: hidden;
-    }
-
-    body {
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at top, rgba(255, 0, 80, 0.10), transparent 35%),
-        radial-gradient(circle at bottom, rgba(0, 153, 255, 0.08), transparent 30%),
-        var(--bg);
-    }
-
-    button,
-    input,
-    select,
-    textarea {
-      font: inherit;
-    }
-
-    button {
-      border: 0;
-      cursor: pointer;
-      transition: transform 0.15s ease, opacity 0.15s ease, background 0.15s ease;
-    }
-
-    button:active {
-      transform: scale(0.98);
-    }
-
-    input,
-    textarea {
-      background: #0f0f0f;
-      border: 1px solid var(--border);
-      color: var(--text);
-      border-radius: 12px;
-      outline: none;
-      padding: 12px 14px;
-      width: 100%;
-    }
-
-    input:focus,
-    textarea:focus {
-      border-color: rgba(255, 0, 80, 0.75);
-      box-shadow: 0 0 0 3px rgba(255, 0, 80, 0.15);
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .screen {
-      min-height: 100vh;
-      width: 100%;
-    }
-
-    .auth-screen {
-      display: grid;
-      place-items: center;
-      padding: 24px;
-    }
-
-    .auth-card {
-      width: 100%;
-      max-width: 420px;
-      background: rgba(17, 17, 17, 0.92);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      box-shadow: var(--shadow);
-      padding: 24px;
-      backdrop-filter: blur(12px);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .brand-badge {
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, #ff0050, #00d4ff);
-      box-shadow: 0 12px 30px rgba(255, 0, 80, 0.25);
-      flex: 0 0 auto;
-    }
-
-    .brand h1 {
-      margin: 0;
-      font-size: 26px;
-      line-height: 1.1;
-    }
-
-    .brand p {
-      margin: 4px 0 0;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .tabs {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin: 18px 0 14px;
-    }
-
-    .tab-btn {
-      padding: 12px 14px;
-      border-radius: 12px;
-      background: #161616;
-      color: var(--muted);
-      border: 1px solid var(--border);
-      font-weight: 600;
-    }
-
-    .tab-btn.active {
-      background: rgba(255, 0, 80, 0.18);
-      color: #fff;
-      border-color: rgba(255, 0, 80, 0.45);
-    }
-
-    .form-grid {
-      display: grid;
-      gap: 12px;
-    }
-
-    .hint {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.45;
-      margin: 4px 0 0;
-    }
-
-    .primary-btn {
-      background: linear-gradient(135deg, #ff0050, #ff3d7f);
-      color: #fff;
-      font-weight: 700;
-      padding: 13px 16px;
-      border-radius: 12px;
-      box-shadow: 0 12px 26px rgba(255, 0, 80, 0.2);
-    }
-
-    .secondary-btn {
-      background: #212121;
-      color: #fff;
-      font-weight: 700;
-      padding: 13px 16px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-    }
-
-    .danger-btn {
-      background: #2a1117;
-      color: #ff8ca5;
-      border: 1px solid rgba(255, 0, 80, 0.22);
-      padding: 11px 14px;
-      border-radius: 12px;
-      font-weight: 700;
-    }
-
-    .small-note {
-      margin-top: 14px;
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
-    .app-shell {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      width: 100%;
-    }
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      background: rgba(12, 12, 12, 0.94);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    }
-
-    .topbar-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
-    }
-
-    .avatar {
-      width: 42px;
-      height: 42px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, #ff0050, #00d4ff);
-      display: grid;
-      place-items: center;
-      font-weight: 800;
-      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.24);
-      flex: 0 0 auto;
-      text-transform: uppercase;
-    }
-
-    .whoami {
-      min-width: 0;
-    }
-
-    .whoami strong {
-      display: block;
-      font-size: 15px;
-      line-height: 1.2;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 220px;
-    }
-
-    .whoami span {
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 2px;
-    }
-
-    .topbar-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex: 0 0 auto;
-    }
-
-    .top-btn {
-      background: #1f1f1f;
-      color: #fff;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px 12px;
-      font-weight: 700;
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 1fr;
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-      flex: 1 1 auto;
-    }
-
-    @media (min-width: 900px) {
-      .layout {
-        grid-template-columns: 360px 1fr;
-      }
-    }
-
-    .sidebar {
-      border-right: 1px solid rgba(255, 255, 255, 0.06);
-      background: rgba(17, 17, 17, 0.55);
-      padding: 18px;
-    }
-
-    .panel {
-      background: rgba(22, 22, 22, 0.78);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px;
-      box-shadow: var(--shadow);
-      margin-bottom: 16px;
-    }
-
-    .panel h2,
-    .panel h3 {
-      margin: 0 0 10px;
-    }
-
-    .panel p {
-      margin: 8px 0;
-      color: var(--muted);
-      line-height: 1.5;
-      font-size: 14px;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 12px;
-    }
-
-    .stat {
-      border: 1px solid var(--border);
-      background: #111;
-      border-radius: 14px;
-      padding: 12px;
-      text-align: center;
-    }
-
-    .stat strong {
-      display: block;
-      font-size: 20px;
-    }
-
-    .stat span {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .composer {
-      display: grid;
-      gap: 10px;
-    }
-
-    .composer-row {
-      display: grid;
-      gap: 10px;
-      grid-template-columns: 1fr;
-    }
-
-    .file-label {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 12px;
-      background: #191919;
-      border: 1px dashed #333;
-      color: #ddd;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .file-label input {
-      display: none;
-    }
-
-    .feed-wrap {
-      min-height: 0;
-      position: relative;
-    }
-
-    #feed {
-      height: calc(100vh - 70px);
-      overflow-y: auto;
-      scroll-snap-type: y mandatory;
-      overscroll-behavior: contain;
-      background: #000;
-    }
-
-    .video-card {
-      position: relative;
-      height: calc(100vh - 70px);
-      scroll-snap-align: start;
-      display: grid;
-      place-items: center;
-      padding: 20px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.03), transparent 55%);
-    }
-
-    .video-frame {
-      position: relative;
-      width: 100%;
-      max-width: 420px;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .video-frame video {
-      width: 100%;
-      height: 100%;
-      max-height: 92vh;
-      object-fit: cover;
-      border-radius: 24px;
-      background: #000;
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .overlay {
-      position: absolute;
-      inset: auto 0 0 0;
-      padding: 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.72) 38%, rgba(0, 0, 0, 0.90));
-      border-radius: 0 0 24px 24px;
-      pointer-events: none;
-    }
-
-    .overlay-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 12px;
-    }
-
-    .author {
-      min-width: 0;
-    }
-
-    .author strong {
-      display: block;
-      font-size: 17px;
-    }
-
-    .author span {
-      display: block;
-      margin-top: 4px;
-      color: rgba(255, 255, 255, 0.72);
-      font-size: 13px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      max-width: 280px;
-    }
-
-    .caption {
-      color: rgba(255, 255, 255, 0.92);
-      font-size: 14px;
-      line-height: 1.45;
-      margin: 0;
-    }
-
-    .meta-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      color: rgba(255, 255, 255, 0.65);
-      font-size: 12px;
-    }
-
-    .actions-bar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 4px;
-      pointer-events: auto;
-      flex-wrap: wrap;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border-radius: 999px;
-      padding: 9px 12px;
-      background: rgba(255, 255, 255, 0.10);
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.10);
-      font-weight: 700;
-      font-size: 13px;
-    }
-
-    .pill.active {
-      background: rgba(255, 0, 80, 0.22);
-      border-color: rgba(255, 0, 80, 0.28);
-    }
-
-    .empty-state {
-      display: grid;
-      place-items: center;
-      min-height: 60vh;
-      text-align: center;
-      padding: 24px;
-      color: var(--muted);
-    }
-
-    .empty-state h2 {
-      margin: 0 0 8px;
-      color: #fff;
-    }
-
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: 24px;
-      transform: translateX(-50%) translateY(20px);
-      background: rgba(18, 18, 18, 0.96);
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 14px;
-      padding: 12px 16px;
-      box-shadow: var(--shadow);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.18s ease, transform 0.18s ease;
-      z-index: 99;
-      max-width: min(92vw, 520px);
-      text-align: center;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    .profile-section {
-      display: grid;
-      gap: 14px;
-    }
-
-    .profile-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .profile-info strong {
-      display: block;
-      font-size: 18px;
-    }
-
-    .profile-info span {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .profile-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-
-    .profile-card {
-      background: #101010;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 14px;
-    }
-
-    .profile-card h4 {
-      margin: 0 0 6px;
-    }
-
-    .profile-card p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .separator {
-      height: 1px;
-      background: rgba(255, 255, 255, 0.08);
-      margin: 8px 0;
-    }
-
-    .utility-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .utility-row .secondary-btn,
-    .utility-row .danger-btn,
-    .utility-row .primary-btn {
-      flex: 1 1 130px;
-    }
-
-    .subtle {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .feed-top-tools {
-      position: sticky;
-      top: 70px;
-      z-index: 15;
-      padding: 10px 16px 0;
-      background: linear-gradient(180deg, rgba(0,0,0,0.88), rgba(0,0,0,0));
-      display: flex;
-      justify-content: center;
-      pointer-events: none;
-    }
-
-    .feed-top-tools .pill {
-      pointer-events: auto;
-      max-width: 420px;
-    }
-
-    .switches {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-    }
-
-    .toggle {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      justify-content: space-between;
-      background: #111;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 11px 12px;
-      color: #fff;
-      font-size: 14px;
-    }
-
-    .toggle input {
-      width: 18px;
-      height: 18px;
-      margin: 0;
-      accent-color: var(--accent);
-    }
-
-    .mini-list {
-      display: grid;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .mini-item {
-      background: #121212;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 12px;
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .mini-item strong {
-      display: block;
-      font-size: 14px;
-    }
-
-    .mini-item span {
-      display: block;
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 3px;
-    }
-
-    .right-tools {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .tag {
-      border-radius: 999px;
-      padding: 6px 10px;
-      background: rgba(255,255,255,0.08);
-      color: #fff;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .link-btn {
-      background: transparent;
-      color: #fff;
-      padding: 0;
-      text-decoration: underline;
-      text-underline-offset: 3px;
-      font-weight: 700;
-    }
-
-    .status-line {
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
-    .bordered {
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 14px;
-      background: rgba(255,255,255,0.02);
-    }
-
-    .stack {
-      display: grid;
-      gap: 8px;
-    }
-
-    .footer-space {
-      height: 34px;
-    }
-
-    /* ===================================================== */
-    /* Big section comments below keep the file easy to edit. */
-    /* ===================================================== */
-    /* AUTH FLOW */
-    /* FIREBASE SETUP */
-    /* USERNAME CLAIMING */
-    /* COOKIE SESSION RESTORE */
-    /* VIDEO UPLOADS */
-    /* VIDEO FEED RENDERING */
-    /* PROFILE AREA */
-    /* UTILITY HELPERS */
-    /* UX TOASTS */
-    /* LINE SPACER BLOCKS */
-    /* ===================================================== */
-
-    /* More spacing for future edits. */
-    /* More spacing for future edits. */
-    /* More spacing for future edits. */
-    /* More spacing for future edits. */
-    /* More spacing for future edits. */
-    /* More spacing for future edits. */
-    /* More spacing for future edits. */
-    /* More spacing for future edits. */
-    /* More spacing for future edits. */
-    /* More spacing for future edits. */
-
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-    /* Reserved */
-
+    /* Minimal styling */
+    :root { --bg:#0f1720; --card:#0b1220; --muted:#9aa4b2; --accent:#ff0057; color-scheme: dark; }
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial;background:linear-gradient(180deg,#071021 0%, #071827 100%);color:#e6eef6}
+    header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(0,0,0,0.2);backdrop-filter:blur(6px)}
+    header h1{margin:0;font-size:18px}
+    nav button{margin-left:8px;padding:6px 10px;border-radius:6px;border:0;background:#0b1220;color:#e6eef6;cursor:pointer}
+    main{padding:16px;max-width:1100px;margin:0 auto}
+    section{margin-top:12px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+    .video-card{background:linear-gradient(180deg,#071827,#071827);border:1px solid rgba(255,255,255,0.03);padding:10px;border-radius:10px}
+    video{width:100%;height:auto;border-radius:8px;background:#000}
+    input,textarea,select,button{font:inherit}
+    input,textarea{width:100%;padding:8px;margin:6px 0;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+    .muted{color:var(--muted);font-size:13px}
+    .row{display:flex;gap:8px;align-items:center}
+    .small{font-size:13px}
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6)}
+    .modal .box{background:#071827;padding:16px;border-radius:10px;width:90%;max-width:720px}
+    .hidden{display:none}
+    .pill{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.03);cursor:pointer}
+    .stat{display:inline-block;margin-right:12px}
+    footer{padding:12px;text-align:center;color:var(--muted);font-size:13px}
   </style>
 </head>
 <body>
-  <div id="toast" class="toast"></div>
+  <header>
+    <h1>MiniTik</h1>
+    <nav>
+      <button id="btn-feed">FYP</button>
+      <button id="btn-upload">Upload</button>
+      <button id="btn-profile">Profile</button>
+      <button id="btn-settings">Settings</button>
+      <button id="btn-signout" class="hidden">Sign out</button>
+    </nav>
+  </header>
 
-  <main id="authScreen" class="screen auth-screen">
-    <section class="auth-card">
-      <div class="brand">
-        <div class="brand-badge"></div>
-        <div>
-          <h1>Mini TikTok</h1>
-          <p>Upload, watch, and claim your username.</p>
+  <main>
+    <!-- Auth -->
+    <section id="auth-section">
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <div style="min-width:280px;max-width:420px">
+          <h3>Sign up</h3>
+          <input id="signup-name" placeholder="Display name" />
+          <input id="signup-username" placeholder="Username (unique, case-insensitive)" />
+          <input id="signup-email" placeholder="Email" />
+          <input id="signup-password" type="password" placeholder="Password" />
+          <button id="signup-btn" class="pill">Create account</button>
         </div>
-      </div>
-
-      <div class="tabs">
-        <button id="loginTab" class="tab-btn active" type="button" onclick="switchTab('login')">Login</button>
-        <button id="signupTab" class="tab-btn" type="button" onclick="switchTab('signup')">Create account</button>
-      </div>
-
-      <div id="loginForm" class="form-grid">
-        <input id="loginEmail" type="email" placeholder="Email" autocomplete="email" />
-        <input id="loginPassword" type="password" placeholder="Password" autocomplete="current-password" />
-        <button class="primary-btn" type="button" onclick="login()">Login</button>
-      </div>
-
-      <div id="signupForm" class="form-grid hidden">
-        <input id="signupEmail" type="email" placeholder="Email" autocomplete="email" />
-        <input id="signupPassword" type="password" placeholder="Password" autocomplete="new-password" />
-        <input id="signupUsername" type="text" placeholder="Username" autocomplete="username" />
-        <p class="hint">Usernames are case-insensitive. Test1, test1, and TEST1 count as the same username.</p>
-        <button class="primary-btn" type="button" onclick="signup()">Create account</button>
-      </div>
-
-      <div class="small-note">
-        Session data is stored in a cookie so the app can remember the signed-in account on reload.
-      </div>
-
-      <div class="small-note">
-        Firebase Auth handles email/password sign-up and sign-in. Username claims are checked in the database before creation.
+        <div style="min-width:280px;max-width:420px">
+          <h3>Sign in</h3>
+          <input id="signin-email" placeholder="Email" />
+          <input id="signin-password" type="password" placeholder="Password" />
+          <button id="signin-btn" class="pill">Sign in</button>
+        </div>
       </div>
     </section>
-  </main>
 
-  <main id="appScreen" class="screen app-shell hidden">
-    <header class="topbar">
-      <div class="topbar-left">
-        <div id="userAvatar" class="avatar">U</div>
-        <div class="whoami">
-          <strong id="userNameText">@user</strong>
-          <span id="userEmailText">signed in</span>
+    <!-- Feed -->
+    <section id="feed-section" class="hidden">
+      <h3>For You</h3>
+      <div id="feed" class="grid"></div>
+    </section>
+
+    <!-- Upload -->
+    <section id="upload-section" class="hidden">
+      <h3>Upload Video</h3>
+      <input id="video-file" type="file" accept="video/*" />
+      <input id="video-title" placeholder="Title" />
+      <textarea id="video-caption" placeholder="Caption"></textarea>
+      <div class="row">
+        <button id="upload-btn" class="pill">Upload</button>
+        <div id="upload-progress" class="muted small"></div>
+      </div>
+    </section>
+
+    <!-- Profile -->
+    <section id="profile-section" class="hidden">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <h3 id="profile-name">Profile</h3>
+          <div id="profile-username" class="muted small"></div>
         </div>
+        <div id="profile-actions"></div>
       </div>
 
-      <div class="topbar-actions">
-        <button class="top-btn" type="button" onclick="scrollToTop()">Top</button>
-        <button class="top-btn" type="button" onclick="reloadFeed()">Refresh</button>
-        <button class="danger-btn" type="button" onclick="logout()">Logout</button>
-      </div>
-    </header>
+      <div id="profile-stats" class="muted small" style="margin-top:8px"></div>
 
-    <div class="layout">
-      <aside class="sidebar">
-        <section class="panel profile-section">
-          <div class="profile-header">
-            <div id="profileAvatar" class="avatar">U</div>
-            <div class="profile-info">
-              <strong id="profileUsername">@user</strong>
-              <span id="profileEmail">email</span>
-            </div>
-          </div>
+      <h4 style="margin-top:12px">Your uploads</h4>
+      <div id="profile-videos" class="grid"></div>
 
-          <div class="stats">
-            <div class="stat">
-              <strong id="statPosts">0</strong>
-              <span>Posts</span>
-            </div>
-            <div class="stat">
-              <strong id="statUploads">0</strong>
-              <span>Uploads</span>
-            </div>
-            <div class="stat">
-              <strong id="statClaims">1</strong>
-              <span>Claimed</span>
-            </div>
-          </div>
-        </section>
-
-        <section class="panel composer">
-          <h3>Upload a video</h3>
-          <input id="captionInput" type="text" placeholder="Caption" maxlength="120" />
-          <label class="file-label" for="videoFile">
-            <span>Choose video file</span>
-            <input id="videoFile" type="file" accept="video/*" />
-          </label>
-          <button class="primary-btn" type="button" onclick="uploadVideo()">Post video</button>
-          <p class="hint">Your uploaded video is stored in Firebase Storage, then saved into the realtime feed list.</p>
-        </section>
-
-        <section class="panel bordered">
-          <h3>Account</h3>
-          <div class="stack">
-            <div class="status-line">Username claim is checked with a lowercase key, so capitalization changes do not bypass uniqueness.</div>
-            <div class="separator"></div>
-            <div class="utility-row">
-              <button class="secondary-btn" type="button" onclick="copyMyUsername()">Copy username</button>
-              <button class="secondary-btn" type="button" onclick="showMyVideos()">My videos</button>
-            </div>
-          </div>
-        </section>
-
-        <section class="panel bordered">
-          <h3>How it works</h3>
-          <p>1. Create an email and password.</p>
-          <p>2. Claim a username once.</p>
-          <p>3. Upload videos and watch them in the feed.</p>
-          <p>4. Refresh the page and your cookie session can restore the account.</p>
-        </section>
-      </aside>
-
-      <section class="feed-wrap">
-        <div class="feed-top-tools">
-          <div class="pill active" id="feedModeLabel">Global feed</div>
+      <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
+        <div>
+          <h4>Following</h4>
+          <div id="profile-following" class="muted small"></div>
         </div>
-        <div id="feed"></div>
-      </section>
+        <div>
+          <h4>Followers</h4>
+          <div id="profile-followers" class="muted small"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Settings -->
+    <section id="settings-section" class="hidden">
+      <h3>Settings</h3>
+      <label class="muted small">Bio</label>
+      <textarea id="bio" placeholder="Bio"></textarea>
+      <div class="row">
+        <button id="save-settings" class="pill">Save</button>
+        <div id="save-status" class="muted small"></div>
+      </div>
+    </section>
+
+    <!-- Comments modal -->
+    <div id="comment-modal" class="modal hidden">
+      <div class="box">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h4>Comments</h4>
+          <button id="close-comments" class="pill">Close</button>
+        </div>
+        <div id="comments-list" style="max-height:320px;overflow:auto;margin-top:8px"></div>
+        <textarea id="comment-text" placeholder="Write a comment"></textarea>
+        <div class="row" style="margin-top:8px">
+          <button id="post-comment" class="pill">Post</button>
+          <div id="comment-status" class="muted small"></div>
+        </div>
+      </div>
     </div>
+
   </main>
 
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+  <footer>MiniTik demo • Make sure Firebase services are enabled for this project</footer>
+
+  <!-- Firebase compat libs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAt0Ef6CgE3mIiEbWhUFXQGGcWTRd4zvl8",
-      authDomain: "official234882848283848588hum1.firebaseapp.com",
-      databaseURL: "https://official234882848283848588hum1-default-rtdb.firebaseio.com",
-      projectId: "official234882848283848588hum1",
-      storageBucket: "official234882848283848588hum1.appspot.com",
-      messagingSenderId: "802241414269",
-      appId: "1:802241414269:web:2336b944e218f3d27add14",
-      measurementId: "G-QJ7QVEVT5F"
-    };
+  // ---------- Firebase config (user-provided) ----------
+  const firebaseConfig = {
+    apiKey: "AIzaSyBXKXlusMoJMH2e3B839xqF-Ii61j8tBo",
+    authDomain: "mbappeout-c0f1c.firebaseapp.com",
+    databaseURL: "https://mbappeout-c0f1c-default-rtdb.firebaseio.com",
+    projectId: "mbappeout-c0f1c",
+    storageBucket: "mbappeout-c0f1c.firebasestorage.app",
+    messagingSenderId: "533365630248",
+    appId: "1:533365630248:web:cbe2abc5bfbdd72c9cdc1d",
+    measurementId: "G-RDPM9R9VKK"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  const storage = firebase.storage();
 
-    firebase.initializeApp(firebaseConfig);
+  // ---------- UI refs ----------
+  const btnFeed = document.getElementById('btn-feed');
+  const btnUpload = document.getElementById('btn-upload');
+  const btnProfile = document.getElementById('btn-profile');
+  const btnSettings = document.getElementById('btn-settings');
+  const btnSignout = document.getElementById('btn-signout');
 
-    const auth = firebase.auth();
-    const db = firebase.database();
-    const storage = firebase.storage();
+  const authSection = document.getElementById('auth-section');
+  const feedSection = document.getElementById('feed-section');
+  const uploadSection = document.getElementById('upload-section');
+  const profileSection = document.getElementById('profile-section');
+  const settingsSection = document.getElementById('settings-section');
 
-    const state = {
-      user: null,
-      username: null,
-      email: null,
-      mode: 'login',
-      videos: [],
-      myVideos: false
-    };
+  const feedDiv = document.getElementById('feed');
+  const uploadBtn = document.getElementById('upload-btn');
+  const videoFileInput = document.getElementById('video-file');
+  const uploadProgress = document.getElementById('upload-progress');
 
-    const els = {
-      authScreen: () => document.getElementById('authScreen'),
-      appScreen: () => document.getElementById('appScreen'),
-      loginTab: () => document.getElementById('loginTab'),
-      signupTab: () => document.getElementById('signupTab'),
-      loginForm: () => document.getElementById('loginForm'),
-      signupForm: () => document.getElementById('signupForm'),
-      loginEmail: () => document.getElementById('loginEmail'),
-      loginPassword: () => document.getElementById('loginPassword'),
-      signupEmail: () => document.getElementById('signupEmail'),
-      signupPassword: () => document.getElementById('signupPassword'),
-      signupUsername: () => document.getElementById('signupUsername'),
-      feed: () => document.getElementById('feed'),
-      captionInput: () => document.getElementById('captionInput'),
-      videoFile: () => document.getElementById('videoFile'),
-      userAvatar: () => document.getElementById('userAvatar'),
-      profileAvatar: () => document.getElementById('profileAvatar'),
-      userNameText: () => document.getElementById('userNameText'),
-      userEmailText: () => document.getElementById('userEmailText'),
-      profileUsername: () => document.getElementById('profileUsername'),
-      profileEmail: () => document.getElementById('profileEmail'),
-      statPosts: () => document.getElementById('statPosts'),
-      statUploads: () => document.getElementById('statUploads'),
-      statClaims: () => document.getElementById('statClaims'),
-      toast: () => document.getElementById('toast'),
-      feedModeLabel: () => document.getElementById('feedModeLabel')
-    };
+  const profileName = document.getElementById('profile-name');
+  const profileUsername = document.getElementById('profile-username');
+  const profileVideos = document.getElementById('profile-videos');
+  const profileStats = document.getElementById('profile-stats');
+  const profileFollowing = document.getElementById('profile-following');
+  const profileFollowers = document.getElementById('profile-followers');
+  const profileActions = document.getElementById('profile-actions');
 
-    function setCookie(name, value, days = 30) {
-      const expires = new Date(Date.now() + days * 864e5).toUTCString();
-      document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
+  const bioInput = document.getElementById('bio');
+  const saveSettingsBtn = document.getElementById('save-settings');
+  const saveStatus = document.getElementById('save-status');
+
+  const commentModal = document.getElementById('comment-modal');
+  const commentsList = document.getElementById('comments-list');
+  const commentText = document.getElementById('comment-text');
+  const postCommentBtn = document.getElementById('post-comment');
+  const commentStatus = document.getElementById('comment-status');
+  const closeCommentsBtn = document.getElementById('close-comments');
+
+  // Auth forms
+  document.getElementById('signup-btn').onclick = signup;
+  document.getElementById('signin-btn').onclick = signin;
+
+  // Navigation
+  btnFeed.onclick = () => showSection('feed');
+  btnUpload.onclick = () => showSection('upload');
+  btnProfile.onclick = () => showSection('profile');
+  btnSettings.onclick = () => showSection('settings');
+  btnSignout.onclick = () => auth.signOut();
+
+  // Comments modal handlers
+  closeCommentsBtn.onclick = () => { commentModal.classList.add('hidden'); currentVideoForComments = null; };
+  postCommentBtn.onclick = postComment;
+
+  let currentUser = null;
+  let currentProfileUid = null;
+  let currentVideoForComments = null;
+
+  function showSection(name) {
+    authSection.classList.add('hidden');
+    feedSection.classList.add('hidden');
+    uploadSection.classList.add('hidden');
+    profileSection.classList.add('hidden');
+    settingsSection.classList.add('hidden');
+
+    if (!currentUser) {
+      authSection.classList.remove('hidden');
+      return;
     }
-
-    function getCookie(name) {
-      const key = `${encodeURIComponent(name)}=`;
-      return document.cookie
-        .split('; ')
-        .find(row => row.startsWith(key))
-        ?.slice(key.length) || '';
-    }
-
-    function eraseCookie(name) {
-      document.cookie = `${encodeURIComponent(name)}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`;
-    }
-
-    function toast(message) {
-      const node = els.toast();
-      node.textContent = message;
-      node.classList.add('show');
-      clearTimeout(window.__toastTimer);
-      window.__toastTimer = setTimeout(() => node.classList.remove('show'), 2600);
-    }
-
-    function normalizeUsername(name) {
-      return String(name || '').trim().toLowerCase();
-    }
-
-    function safeText(v) {
-      return String(v == null ? '' : v);
-    }
-
-    function initialFromUsername(username) {
-      const clean = normalizeUsername(username);
-      return clean ? clean[0].toUpperCase() : 'U';
-    }
-
-    function switchTab(mode) {
-      state.mode = mode;
-      const loginActive = mode === 'login';
-      els.loginTab().classList.toggle('active', loginActive);
-      els.signupTab().classList.toggle('active', !loginActive);
-      els.loginForm().classList.toggle('hidden', !loginActive);
-      els.signupForm().classList.toggle('hidden', loginActive);
-    }
-
-    function showAppShell() {
-      els.authScreen().classList.add('hidden');
-      els.appScreen().classList.remove('hidden');
-    }
-
-    function showAuthShell() {
-      els.appScreen().classList.add('hidden');
-      els.authScreen().classList.remove('hidden');
-    }
-
-    async function usernameExists(lowerUsername) {
-      const snap = await db.ref(`usernames/${lowerUsername}`).get();
-      return snap.exists();
-    }
-
-    async function getUserProfile(uid) {
-      const snap = await db.ref(`users/${uid}`).get();
-      return snap.exists() ? snap.val() : null;
-    }
-
-    async function saveUserProfile(uid, email, username) {
-      const payload = {
-        uid,
-        email: email || '',
-        username: normalizeUsername(username),
-        createdAt: Date.now()
-      };
-
-      await Promise.all([
-        db.ref(`users/${uid}`).set(payload),
-        db.ref(`usernames/${normalizeUsername(username)}`).set({
-          uid,
-          username: normalizeUsername(username),
-          email: email || '',
-          createdAt: Date.now()
-        })
-      ]);
-    }
-
-    async function findUsernameByUid(uid) {
-      const profile = await getUserProfile(uid);
-      if (profile && profile.username) return normalizeUsername(profile.username);
-      return decodeURIComponent(getCookie('sessionUsername') || '') || null;
-    }
-
-    async function signup() {
-      const email = safeText(els.signupEmail().value).trim();
-      const password = safeText(els.signupPassword().value);
-      const rawUsername = safeText(els.signupUsername().value).trim();
-      const lowerUsername = normalizeUsername(rawUsername);
-
-      if (!email || !password || !rawUsername) {
-        toast('Please fill in email, password, and username.');
-        return;
-      }
-
-      if (!lowerUsername) {
-        toast('Username cannot be empty.');
-        return;
-      }
-
-      if (lowerUsername.length < 3) {
-        toast('Username must be at least 3 characters.');
-        return;
-      }
-
-      const claimed = await usernameExists(lowerUsername);
-      if (claimed) {
-        toast('Username already claimed.');
-        return;
-      }
-
-      try {
-        await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-        const cred = await auth.createUserWithEmailAndPassword(email, password);
-
-        await saveUserProfile(cred.user.uid, cred.user.email || email, lowerUsername);
-
-        setCookie('sessionEmail', cred.user.email || email);
-        setCookie('sessionUsername', lowerUsername);
-        setCookie('sessionUid', cred.user.uid);
-
-        state.user = cred.user;
-        state.username = lowerUsername;
-        state.email = cred.user.email || email;
-
-        toast('Account created and username claimed.');
-        await enterApp();
-      } catch (error) {
-        console.error(error);
-        toast(error.message || 'Signup failed.');
-      }
-    }
-
-    async function login() {
-      const email = safeText(els.loginEmail().value).trim();
-      const password = safeText(els.loginPassword().value);
-
-      if (!email || !password) {
-        toast('Enter email and password.');
-        return;
-      }
-
-      try {
-        await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-        const cred = await auth.signInWithEmailAndPassword(email, password);
-
-        let profile = await getUserProfile(cred.user.uid);
-        let username = profile?.username ? normalizeUsername(profile.username) : null;
-
-        if (!username) {
-          const cookieUsername = decodeURIComponent(getCookie('sessionUsername') || '');
-          if (cookieUsername) username = normalizeUsername(cookieUsername);
-        }
-
-        if (!username) {
-          toast('No username found for this account.');
-          return;
-        }
-
-        if (!profile) {
-          await saveUserProfile(cred.user.uid, cred.user.email || email, username);
-        }
-
-        state.user = cred.user;
-        state.username = username;
-        state.email = cred.user.email || email;
-
-        setCookie('sessionEmail', state.email);
-        setCookie('sessionUsername', username);
-        setCookie('sessionUid', cred.user.uid);
-
-        toast('Logged in successfully.');
-        await enterApp();
-      } catch (error) {
-        console.error(error);
-        toast(error.message || 'Login failed.');
-      }
-    }
-
-    async function enterApp() {
-      if (!state.user || !state.username) return;
-      showAppShell();
-      updateHeader();
-      await reloadFeed();
-      await updateCounts();
-      clearInputs();
-    }
-
-    function updateHeader() {
-      const initial = initialFromUsername(state.username);
-      els.userAvatar().textContent = initial;
-      els.profileAvatar().textContent = initial;
-      els.userNameText().textContent = `@${state.username}`;
-      els.profileUsername().textContent = `@${state.username}`;
-      els.userEmailText().textContent = state.email || 'signed in';
-      els.profileEmail().textContent = state.email || 'signed in';
-    }
-
-    function clearInputs() {
-      els.loginPassword().value = '';
-      els.signupPassword().value = '';
-      els.captionInput().value = '';
-      els.videoFile().value = '';
-    }
-
-    async function updateCounts() {
-      const [postsSnap, profile] = await Promise.all([
-        db.ref('videos').get(),
-        state.user ? getUserProfile(state.user.uid) : Promise.resolve(null)
-      ]);
-
-      let totalPosts = 0;
-      let myPosts = 0;
-      postsSnap.forEach(child => {
-        totalPosts += 1;
-        const v = child.val();
-        if (v && normalizeUsername(v.user) === normalizeUsername(state.username)) myPosts += 1;
-      });
-
-      els.statPosts().textContent = String(myPosts);
-      els.statUploads().textContent = String(totalPosts);
-      els.statClaims().textContent = profile && profile.username ? '1' : '0';
-    }
-
-    async function uploadVideo() {
-      const file = els.videoFile().files[0];
-      const caption = safeText(els.captionInput().value).trim();
-
-      if (!state.user || !state.username) {
-        toast('You must be signed in.');
-        return;
-      }
-
-      if (!file) {
-        toast('Choose a video file first.');
-        return;
-      }
-
-      if (!file.type.startsWith('video/')) {
-        toast('File must be a video.');
-        return;
-      }
-
-      // preview upload UI
-      toast('Uploading...');
-
-      try {
-        const uniqueName = `${Date.now()}_${file.name}`.replace(/[^a-zA-Z0-9._-]/g, '_');
-        const storageRef = storage.ref(`videos/${state.user.uid}/${uniqueName}`);
-
-        const uploadTask = storageRef.put(file);
-
-        uploadTask.on('state_changed', (snap) => {
-          const progress = (snap.bytesTransferred / snap.totalBytes) * 100;
-          els.feedModeLabel().textContent = `Uploading ${progress.toFixed(0)}%`;
-        });
-
-        await uploadTask;
-
-        const url = await storageRef.getDownloadURL();
-
-        const post = {
-          url,
-          caption,
-          user: state.username,
-          uid: state.user.uid,
-          email: state.email || state.user.email || '',
-          createdAt: Date.now(),
-          fileName: file.name,
-          fileType: file.type,
-          size: file.size
-        };
-
-        const newRef = await db.ref('videos').push(post);
-
-        // instantly show without reload
-        state.videos.unshift({ id: newRef.key, ...post });
-        renderFeed(state.videos);
-
-        toast('Video uploaded!');
-
-        els.captionInput().value = '';
-        els.videoFile().value = '';
-
-        await updateCounts();
-        els.feedModeLabel().textContent = state.myVideos ? 'My videos' : 'Global feed';
-
-      } catch (error) {
-        console.error(error);
-        toast('Upload failed. Check Firebase rules/storage.');
-      }
-    }if (!file) {
-        toast('Choose a video file first.');
-        return;
-      }
-
-      if (!file.type.startsWith('video/')) {
-        toast('That file is not a video.');
-        return;
-      }
-
-      const uniqueName = `${Date.now()}_${file.name}`.replace(/[^a-zA-Z0-9._-]/g, '_');
-      const ref = storage.ref(`videos/${state.user.uid}/${uniqueName}`);
-
-      try {
-        toast('Uploading video...');
-        await ref.put(file);
-        const url = await ref.getDownloadURL();
-
-        await db.ref('videos').push({
-          url,
-          caption,
-          user: state.username,
-          uid: state.user.uid,
-          email: state.email || state.user.email || '',
-          createdAt: Date.now(),
-          fileName: file.name,
-          fileType: file.type,
-          size: file.size
-        });
-
-        toast('Video posted.');
-        els.captionInput().value = '';
-        els.videoFile().value = '';
-        await reloadFeed();
-        await updateCounts();
-      } catch (error) {
-        console.error(error);
-        toast(error.message || 'Upload failed.');
-      }
-    }
-
-    async function reloadFeed() {
-      state.myVideos = false;
-      els.feedModeLabel().textContent = 'Global feed';
-      const snap = await db.ref('videos').get();
-      const items = [];
-      snap.forEach(child => {
-        items.push({ id: child.key, ...child.val() });
-      });
-      items.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-      state.videos = items;
-      renderFeed(items);
-      await updateCounts();
-    }
-
-    function renderFeed(items) {
-      const feed = els.feed();
-      feed.innerHTML = '';
-
-      if (!items.length) {
-        feed.innerHTML = `
-          <div class="empty-state">
-            <div>
-              <h2>No videos yet</h2>
-              <p>Upload the first video to start your feed.</p>
-            </div>
-          </div>
-        `;
-        return;
-      }
-
-      items.forEach((item) => {
-        const card = document.createElement('article');
-        card.className = 'video-card';
-
-        const created = item.createdAt ? new Date(item.createdAt).toLocaleString() : 'unknown time';
-        const sizeMb = item.size ? `${(item.size / 1024 / 1024).toFixed(1)} MB` : 'unknown size';
-
-        card.innerHTML = `
-          <div class="video-frame">
-            <video src="${escapeHtmlAttr(item.url || '')}" controls playsinline loop muted autoplay></video>
-            <div class="overlay">
-              <div class="overlay-top">
-                <div class="author">
-                  <strong>@${escapeHtml(item.user || 'unknown')}</strong>
-                  <span>${escapeHtml(item.email || '')}</span>
-                </div>
-                <div class="right-tools">
-                  <span class="tag">${escapeHtml(sizeMb)}</span>
-                </div>
-              </div>
-              <p class="caption">${escapeHtml(item.caption || 'No caption')}</p>
-              <div class="meta-row">
-                <span>${escapeHtml(created)}</span>
-                <span>•</span>
-                <span>${escapeHtml(item.fileName || 'video')}</span>
-              </div>
-              <div class="actions-bar">
-                <button class="pill active" type="button" data-like="${escapeHtmlAttr(item.id || '')}">Like</button>
-                <button class="pill" type="button" data-copy="${escapeHtmlAttr(item.url || '')}">Copy link</button>
-              </div>
-            </div>
-          </div>
-        `;
-
-        feed.appendChild(card);
-      });
-
-      feed.querySelectorAll('[data-like]').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          toast('Like saved locally in this demo.');
+    if (name === 'feed') feedSection.classList.remove('hidden');
+    if (name === 'upload') uploadSection.classList.remove('hidden');
+    if (name === 'profile') profileSection.classList.remove('hidden');
+    if (name === 'settings') settingsSection.classList.remove('hidden');
+  }
+
+  // ---------- Auth ----------
+  async function signup() {
+    const displayName = document.getElementById('signup-name').value.trim();
+    const username = document.getElementById('signup-username').value.trim();
+    const email = document.getElementById('signup-email').value.trim();
+    const password = document.getElementById('signup-password').value;
+    if (!displayName || !username || !email || !password) { alert('Fill all fields'); return; }
+    try {
+      const userCred = await auth.createUserWithEmailAndPassword(email, password);
+      const uid = userCred.user.uid;
+      const username_lc = username.toLowerCase();
+
+      const usernameRef = db.collection('usernames').doc(username_lc);
+      await db.runTransaction(async (tx) => {
+        const doc = await tx.get(usernameRef);
+        if (doc.exists) throw new Error('Username already taken');
+        tx.set(usernameRef, { uid, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        const userRef = db.collection('users').doc(uid);
+        tx.set(userRef, {
+          displayName,
+          username,
+          username_lc,
+          email,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          bio: '',
+          stats: { uploads: 0, likesReceived: 0, followers: 0, following: 0 }
         });
       });
 
-      feed.querySelectorAll('[data-copy]').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-          const url = btn.getAttribute('data-copy') || '';
-          if (!url) return;
-          try {
-            await navigator.clipboard.writeText(url);
-            toast('Video link copied.');
-          } catch {
-            toast('Copy failed.');
-          }
-        });
+      await userCred.user.updateProfile({ displayName });
+      alert('Account created');
+    } catch (err) {
+      // If auth user created but transaction failed, you may want to delete the auth user in production.
+      alert('Sign up error: ' + err.message);
+    }
+  }
+
+  async function signin() {
+    const email = document.getElementById('signin-email').value.trim();
+    const password = document.getElementById('signin-password').value;
+    try {
+      await auth.signInWithEmailAndPassword(email, password);
+    } catch (err) {
+      alert('Sign in error: ' + err.message);
+    }
+  }
+
+  auth.onAuthStateChanged(async (user) => {
+    currentUser = user;
+    if (user) {
+      btnSignout.classList.remove('hidden');
+      authSection.classList.add('hidden');
+      showSection('feed');
+      await loadFeed();
+      await loadProfile(user.uid);
+    } else {
+      btnSignout.classList.add('hidden');
+      authSection.classList.remove('hidden');
+      feedSection.classList.add('hidden');
+      uploadSection.classList.add('hidden');
+      profileSection.classList.add('hidden');
+      settingsSection.classList.add('hidden');
+    }
+  });
+
+  // ---------- Upload ----------
+  uploadBtn.onclick = async () => {
+    if (!currentUser) { alert('Sign in first'); return; }
+    const file = videoFileInput.files[0];
+    const title = document.getElementById('video-title').value || '';
+    const caption = document.getElementById('video-caption').value || '';
+    if (!file) { alert('Choose a video'); return; }
+
+    const uid = currentUser.uid;
+    const videoId = db.collection('videos').doc().id;
+    const storagePath = `videos/${uid}/${videoId}_${Date.now()}_${file.name}`;
+    const storageRef = storage.ref(storagePath);
+    const uploadTask = storageRef.put(file);
+
+    uploadProgress.textContent = 'Uploading... 0%';
+    uploadTask.on('state_changed', (snap) => {
+      const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
+      uploadProgress.textContent = `Uploading... ${pct}%`;
+    }, (err) => {
+      alert('Upload failed: ' + err.message);
+    }, async () => {
+      const url = await storageRef.getDownloadURL();
+      const userDoc = await db.collection('users').doc(uid).get();
+      const ownerUsername = userDoc.exists ? userDoc.data().username : 'unknown';
+      await db.collection('videos').doc(videoId).set({
+        ownerUid: uid,
+        ownerUsername,
+        title,
+        caption,
+        storagePath,
+        videoUrl: url,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        likesCount: 0,
+        commentsCount: 0,
+        views: 0
       });
-    }
-
-    function escapeHtml(str) {
-      return String(str)
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#39;');
-    }
-
-    function escapeHtmlAttr(str) {
-      return escapeHtml(str).replaceAll('`', '&#96;');
-    }
-
-    function scrollToTop() {
-      els.feed().scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    async function showMyVideos() {
-      if (!state.username) return;
-      const mine = state.videos.filter(v => normalizeUsername(v.user) === normalizeUsername(state.username));
-      state.myVideos = true;
-      els.feedModeLabel().textContent = 'My videos';
-      renderFeed(mine);
-      toast(`Showing ${mine.length} video(s).`);
-    }
-
-    async function copyMyUsername() {
-      if (!state.username) return;
-      try {
-        await navigator.clipboard.writeText(state.username);
-        toast('Username copied.');
-      } catch {
-        toast('Could not copy username.');
-      }
-    }
-
-    async function logout() {
-      try {
-        await auth.signOut();
-      } catch (error) {
-        console.error(error);
-      }
-      eraseCookie('sessionEmail');
-      eraseCookie('sessionUsername');
-      eraseCookie('sessionUid');
-      state.user = null;
-      state.username = null;
-      state.email = null;
-      state.videos = [];
-      state.myVideos = false;
-      showAuthShell();
-      switchTab('login');
-      toast('Logged out.');
-    }
-
-    async function restoreFromCookie() {
-      const cookieEmail = decodeURIComponent(getCookie('sessionEmail') || '');
-      const cookieUsername = decodeURIComponent(getCookie('sessionUsername') || '');
-      if (cookieUsername) {
-        els.signupUsername().value = cookieUsername;
-      }
-      if (cookieEmail) {
-        els.loginEmail().value = cookieEmail;
-        els.signupEmail().value = cookieEmail;
-      }
-    }
-
-    async function tryAutoLogin() {
-      await restoreFromCookie();
-      auth.onAuthStateChanged(async (user) => {
-        if (!user) return;
-        const username = await findUsernameByUid(user.uid);
-        if (!username) return;
-        state.user = user;
-        state.username = username;
-        state.email = user.email || decodeURIComponent(getCookie('sessionEmail') || '');
-        setCookie('sessionEmail', state.email || '');
-        setCookie('sessionUsername', username);
-        setCookie('sessionUid', user.uid);
-        await enterApp();
+      await db.collection('users').doc(uid).update({
+        'stats.uploads': firebase.firestore.FieldValue.increment(1)
       });
-    }
+      uploadProgress.textContent = 'Upload complete';
+      videoFileInput.value = '';
+      document.getElementById('video-title').value = '';
+      document.getElementById('video-caption').value = '';
+      await loadFeed();
+      await loadProfile(uid);
+    });
+  };
 
-    function wireKeyboardShortcuts() {
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          state.myVideos = false;
-          els.feedModeLabel().textContent = 'Global feed';
-          renderFeed(state.videos);
-        }
-
-        if (e.key === 'r' && (e.ctrlKey || e.metaKey)) {
-          e.preventDefault();
-          reloadFeed();
-        }
+  // ---------- Feed ----------
+  async function loadFeed() {
+    feedDiv.innerHTML = 'Loading...';
+    try {
+      const q = db.collection('videos').orderBy('createdAt', 'desc').limit(50);
+      const snap = await q.get();
+      feedDiv.innerHTML = '';
+      snap.forEach(doc => {
+        const data = doc.data();
+        const id = doc.id;
+        const card = createVideoCard(id, data);
+        feedDiv.appendChild(card);
       });
+    } catch (err) {
+      feedDiv.innerHTML = 'Failed to load feed: ' + err.message;
     }
+  }
 
-    function wireEnterToSubmit() {
-      const submitOnEnter = (input, fn) => {
-        input.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') fn();
-        });
-      };
+  function createVideoCard(id, data) {
+    const div = document.createElement('div');
+    div.className = 'video-card';
 
-      submitOnEnter(els.loginPassword(), login);
-      submitOnEnter(els.signupUsername(), signup);
-      submitOnEnter(els.signupPassword(), signup);
-    }
+    const video = document.createElement('video');
+    video.src = data.videoUrl;
+    video.controls = true;
+    video.preload = 'metadata';
+    div.appendChild(video);
 
-    function wireAutoClearMode() {
-      [els.loginEmail(), els.loginPassword(), els.signupEmail(), els.signupPassword(), els.signupUsername()].forEach(el => {
-        el.addEventListener('input', () => {
-          if (state.myVideos) {
-            state.myVideos = false;
-            els.feedModeLabel().textContent = 'Global feed';
-          }
-        });
-      });
-    }
+    const title = document.createElement('div');
+    title.textContent = data.title || '';
+    title.style.fontWeight = '600';
+    title.style.marginTop = '8px';
+    div.appendChild(title);
 
-    function setupDemoHints() {
-      toast('Ready. Sign up or login to continue.');
-    }
+    const owner = document.createElement('div');
+    owner.textContent = '@' + (data.ownerUsername || 'unknown');
+    owner.className = 'muted small';
+    owner.style.marginTop = '4px';
+    div.appendChild(owner);
 
-    async function safeBootstrap() {
-      switchTab('login');
-      wireKeyboardShortcuts();
-      wireEnterToSubmit();
-      wireAutoClearMode();
-      await tryAutoLogin();
-      if (!auth.currentUser) {
-        showAuthShell();
+    const caption = document.createElement('div');
+    caption.textContent = data.caption || '';
+    caption.className = 'muted small';
+    caption.style.marginTop = '6px';
+    div.appendChild(caption);
+
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.style.marginTop = '8px';
+
+    const likeBtn = document.createElement('button');
+    likeBtn.className = 'pill';
+    likeBtn.textContent = `❤ ${data.likesCount || 0}`;
+    likeBtn.onclick = () => toggleLike(id, likeBtn);
+    row.appendChild(likeBtn);
+
+    const commentBtn = document.createElement('button');
+    commentBtn.className = 'pill';
+    commentBtn.textContent = `💬 ${data.commentsCount || 0}`;
+    commentBtn.onclick = () => openComments(id);
+    row.appendChild(commentBtn);
+
+    const followBtn = document.createElement('button');
+    followBtn.className = 'pill';
+    followBtn.textContent = `Follow`;
+    followBtn.onclick = () => toggleFollow(data.ownerUid, followBtn);
+    row.appendChild(followBtn);
+
+    div.appendChild(row);
+    return div;
+  }
+
+  // ---------- Likes ----------
+  async function toggleLike(videoId, btnEl) {
+    if (!currentUser) { alert('Sign in'); return; }
+    const uid = currentUser.uid;
+    const likeRef = db.collection('videos').doc(videoId).collection('likes').doc(uid);
+    const videoRef = db.collection('videos').doc(videoId);
+    try {
+      const likeDoc = await likeRef.get();
+      if (likeDoc.exists) {
+        await likeRef.delete();
+        await videoRef.update({ likesCount: firebase.firestore.FieldValue.increment(-1) });
+        // decrement owner's likesReceived
+        const videoDoc = await videoRef.get();
+        const ownerUid = videoDoc.data().ownerUid;
+        await db.collection('users').doc(ownerUid).update({ 'stats.likesReceived': firebase.firestore.FieldValue.increment(-1) });
+      } else {
+        await likeRef.set({ createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        await videoRef.update({ likesCount: firebase.firestore.FieldValue.increment(1) });
+        const videoDoc = await videoRef.get();
+        const ownerUid = videoDoc.data().ownerUid;
+        await db.collection('users').doc(ownerUid).update({ 'stats.likesReceived': firebase.firestore.FieldValue.increment(1) });
       }
-      setupDemoHints();
+      // refresh feed counts quickly
+      await loadFeed();
+      if (currentProfileUid) await loadProfile(currentProfileUid);
+    } catch (err) {
+      alert('Like error: ' + err.message);
     }
+  }
 
-    /* ==============================================================
-       EXTRA DOCUMENTATION LINES
-       The next block is intentionally verbose so the file remains a
-       single-page HTML document that is easy to extend later.
-       ============================================================== */
+  // ---------- Comments ----------
+  async function openComments(videoId) {
+    currentVideoForComments = videoId;
+    commentsList.innerHTML = 'Loading...';
+    commentModal.classList.remove('hidden');
+    try {
+      const snap = await db.collection('videos').doc(videoId).collection('comments').orderBy('createdAt','asc').get();
+      commentsList.innerHTML = '';
+      snap.forEach(doc => {
+        const c = doc.data();
+        const el = document.createElement('div');
+        el.style.padding = '8px 0';
+        el.innerHTML = `<strong>@${escapeHtml(c.username || 'anon')}</strong> <div class="muted small">${escapeHtml(c.text)}</div>`;
+        commentsList.appendChild(el);
+      });
+    } catch (err) {
+      commentsList.innerHTML = 'Failed to load comments: ' + err.message;
+    }
+  }
 
-    /* 01 */
-    /* 02 */
-    /* 03 */
-    /* 04 */
-    /* 05 */
-    /* 06 */
-    /* 07 */
-    /* 08 */
-    /* 09 */
-    /* 10 */
-    /* 11 */
-    /* 12 */
-    /* 13 */
-    /* 14 */
-    /* 15 */
-    /* 16 */
-    /* 17 */
-    /* 18 */
-    /* 19 */
-    /* 20 */
-    /* 21 */
-    /* 22 */
-    /* 23 */
-    /* 24 */
-    /* 25 */
-    /* 26 */
-    /* 27 */
-    /* 28 */
-    /* 29 */
-    /* 30 */
-    /* 31 */
-    /* 32 */
-    /* 33 */
-    /* 34 */
-    /* 35 */
-    /* 36 */
-    /* 37 */
-    /* 38 */
-    /* 39 */
-    /* 40 */
-    /* 41 */
-    /* 42 */
-    /* 43 */
-    /* 44 */
-    /* 45 */
-    /* 46 */
-    /* 47 */
-    /* 48 */
-    /* 49 */
-    /* 50 */
-    /* 51 */
-    /* 52 */
-    /* 53 */
-    /* 54 */
-    /* 55 */
-    /* 56 */
-    /* 57 */
-    /* 58 */
-    /* 59 */
-    /* 60 */
-    /* 61 */
-    /* 62 */
-    /* 63 */
-    /* 64 */
-    /* 65 */
-    /* 66 */
-    /* 67 */
-    /* 68 */
-    /* 69 */
-    /* 70 */
-    /* 71 */
-    /* 72 */
-    /* 73 */
-    /* 74 */
-    /* 75 */
-    /* 76 */
-    /* 77 */
-    /* 78 */
-    /* 79 */
-    /* 80 */
-    /* 81 */
-    /* 82 */
-    /* 83 */
-    /* 84 */
-    /* 85 */
-    /* 86 */
-    /* 87 */
-    /* 88 */
-    /* 89 */
-    /* 90 */
-    /* 91 */
-    /* 92 */
-    /* 93 */
-    /* 94 */
-    /* 95 */
-    /* 96 */
-    /* 97 */
-    /* 98 */
-    /* 99 */
-    /* 100 */
-    /* 101 */
-    /* 102 */
-    /* 103 */
-    /* 104 */
-    /* 105 */
-    /* 106 */
-    /* 107 */
-    /* 108 */
-    /* 109 */
-    /* 110 */
-    /* 111 */
-    /* 112 */
-    /* 113 */
-    /* 114 */
-    /* 115 */
-    /* 116 */
-    /* 117 */
-    /* 118 */
-    /* 119 */
-    /* 120 */
-    /* 121 */
-    /* 122 */
-    /* 123 */
-    /* 124 */
-    /* 125 */
-    /* 126 */
-    /* 127 */
-    /* 128 */
-    /* 129 */
-    /* 130 */
-    /* 131 */
-    /* 132 */
-    /* 133 */
-    /* 134 */
-    /* 135 */
-    /* 136 */
-    /* 137 */
-    /* 138 */
-    /* 139 */
-    /* 140 */
-    /* 141 */
-    /* 142 */
-    /* 143 */
-    /* 144 */
-    /* 145 */
-    /* 146 */
-    /* 147 */
-    /* 148 */
-    /* 149 */
-    /* 150 */
-    /* 151 */
-    /* 152 */
-    /* 153 */
-    /* 154 */
-    /* 155 */
-    /* 156 */
-    /* 157 */
-    /* 158 */
-    /* 159 */
-    /* 160 */
-    /* 161 */
-    /* 162 */
-    /* 163 */
-    /* 164 */
-    /* 165 */
-    /* 166 */
-    /* 167 */
-    /* 168 */
-    /* 169 */
-    /* 170 */
-    /* 171 */
-    /* 172 */
-    /* 173 */
-    /* 174 */
-    /* 175 */
-    /* 176 */
-    /* 177 */
-    /* 178 */
-    /* 179 */
-    /* 180 */
-    /* 181 */
-    /* 182 */
-    /* 183 */
-    /* 184 */
-    /* 185 */
-    /* 186 */
-    /* 187 */
-    /* 188 */
-    /* 189 */
-    /* 190 */
-    /* 191 */
-    /* 192 */
-    /* 193 */
-    /* 194 */
-    /* 195 */
-    /* 196 */
-    /* 197 */
-    /* 198 */
-    /* 199 */
-    /* 200 */
+  async function postComment() {
+    if (!currentUser) { alert('Sign in'); return; }
+    if (!currentVideoForComments) return;
+    const text = commentText.value.trim();
+    if (!text) return;
+    postCommentBtn.disabled = true;
+    commentStatus.textContent = 'Posting...';
+    try {
+      const userDoc = await db.collection('users').doc(currentUser.uid).get();
+      const username = userDoc.exists ? userDoc.data().username : 'anon';
+      const commentRef = db.collection('videos').doc(currentVideoForComments).collection('comments').doc();
+      await commentRef.set({
+        uid: currentUser.uid,
+        username,
+        text,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      await db.collection('videos').doc(currentVideoForComments).update({ commentsCount: firebase.firestore.FieldValue.increment(1) });
+      commentText.value = '';
+      commentStatus.textContent = 'Posted';
+      await openComments(currentVideoForComments);
+      await loadFeed();
+    } catch (err) {
+      commentStatus.textContent = 'Error: ' + err.message;
+    } finally {
+      postCommentBtn.disabled = false;
+      setTimeout(()=>commentStatus.textContent='',1200);
+    }
+  }
 
-    /* 201 */
-    /* 202 */
-    /* 203 */
-    /* 204 */
-    /* 205 */
-    /* 206 */
-    /* 207 */
-    /* 208 */
-    /* 209 */
-    /* 210 */
-    /* 211 */
-    /* 212 */
-    /* 213 */
-    /* 214 */
-    /* 215 */
-    /* 216 */
-    /* 217 */
-    /* 218 */
-    /* 219 */
-    /* 220 */
-    /* 221 */
-    /* 222 */
-    /* 223 */
-    /* 224 */
-    /* 225 */
-    /* 226 */
-    /* 227 */
-    /* 228 */
-    /* 229 */
-    /* 230 */
-    /* 231 */
-    /* 232 */
-    /* 233 */
-    /* 234 */
-    /* 235 */
-    /* 236 */
-    /* 237 */
-    /* 238 */
-    /* 239 */
-    /* 240 */
-    /* 241 */
-    /* 242 */
-    /* 243 */
-    /* 244 */
-    /* 245 */
-    /* 246 */
-    /* 247 */
-    /* 248 */
-    /* 249 */
-    /* 250 */
-    /* 251 */
-    /* 252 */
-    /* 253 */
-    /* 254 */
-    /* 255 */
-    /* 256 */
-    /* 257 */
-    /* 258 */
-    /* 259 */
-    /* 260 */
-    /* 261 */
-    /* 262 */
-    /* 263 */
-    /* 264 */
-    /* 265 */
-    /* 266 */
-    /* 267 */
-    /* 268 */
-    /* 269 */
-    /* 270 */
-    /* 271 */
-    /* 272 */
-    /* 273 */
-    /* 274 */
-    /* 275 */
-    /* 276 */
-    /* 277 */
-    /* 278 */
-    /* 279 */
-    /* 280 */
-    /* 281 */
-    /* 282 */
-    /* 283 */
-    /* 284 */
-    /* 285 */
-    /* 286 */
-    /* 287 */
-    /* 288 */
-    /* 289 */
-    /* 290 */
-    /* 291 */
-    /* 292 */
-    /* 293 */
-    /* 294 */
-    /* 295 */
-    /* 296 */
-    /* 297 */
-    /* 298 */
-    /* 299 */
-    /* 300 */
+  // ---------- Follow ----------
+  async function toggleFollow(targetUid, btnEl) {
+    if (!currentUser) { alert('Sign in'); return; }
+    if (currentUser.uid === targetUid) { alert("You can't follow yourself"); return; }
+    const myFollowingRef = db.collection('users').doc(currentUser.uid).collection('following').doc(targetUid);
+    const theirFollowersRef = db.collection('users').doc(targetUid).collection('followers').doc(currentUser.uid);
+    try {
+      const doc = await myFollowingRef.get();
+      if (doc.exists) {
+        await myFollowingRef.delete();
+        await theirFollowersRef.delete();
+        await db.collection('users').doc(currentUser.uid).update({ 'stats.following': firebase.firestore.FieldValue.increment(-1) });
+        await db.collection('users').doc(targetUid).update({ 'stats.followers': firebase.firestore.FieldValue.increment(-1) });
+      } else {
+        await myFollowingRef.set({ createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        await theirFollowersRef.set({ createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        await db.collection('users').doc(currentUser.uid).update({ 'stats.following': firebase.firestore.FieldValue.increment(1) });
+        await db.collection('users').doc(targetUid).update({ 'stats.followers': firebase.firestore.FieldValue.increment(1) });
+      }
+      await loadProfile(currentProfileUid || currentUser.uid);
+      await loadFeed();
+    } catch (err) {
+      alert('Follow error: ' + err.message);
+    }
+  }
 
-    /* 301 */
-    /* 302 */
-    /* 303 */
-    /* 304 */
-    /* 305 */
-    /* 306 */
-    /* 307 */
-    /* 308 */
-    /* 309 */
-    /* 310 */
-    /* 311 */
-    /* 312 */
-    /* 313 */
-    /* 314 */
-    /* 315 */
-    /* 316 */
-    /* 317 */
-    /* 318 */
-    /* 319 */
-    /* 320 */
-    /* 321 */
-    /* 322 */
-    /* 323 */
-    /* 324 */
-    /* 325 */
-    /* 326 */
-    /* 327 */
-    /* 328 */
-    /* 329 */
-    /* 330 */
-    /* 331 */
-    /* 332 */
-    /* 333 */
-    /* 334 */
-    /* 335 */
-    /* 336 */
-    /* 337 */
-    /* 338 */
-    /* 339 */
-    /* 340 */
-    /* 341 */
-    /* 342 */
-    /* 343 */
-    /* 344 */
-    /* 345 */
-    /* 346 */
-    /* 347 */
-    /* 348 */
-    /* 349 */
-    /* 350 */
-    /* 351 */
-    /* 352 */
-    /* 353 */
-    /* 354 */
-    /* 355 */
-    /* 356 */
-    /* 357 */
-    /* 358 */
-    /* 359 */
-    /* 360 */
-    /* 361 */
-    /* 362 */
-    /* 363 */
-    /* 364 */
-    /* 365 */
-    /* 366 */
-    /* 367 */
-    /* 368 */
-    /* 369 */
-    /* 370 */
-    /* 371 */
-    /* 372 */
-    /* 373 */
-    /* 374 */
-    /* 375 */
-    /* 376 */
-    /* 377 */
-    /* 378 */
-    /* 379 */
-    /* 380 */
-    /* 381 */
-    /* 382 */
-    /* 383 */
-    /* 384 */
-    /* 385 */
-    /* 386 */
-    /* 387 */
-    /* 388 */
-    /* 389 */
-    /* 390 */
-    /* 391 */
-    /* 392 */
-    /* 393 */
-    /* 394 */
-    /* 395 */
-    /* 396 */
-    /* 397 */
-    /* 398 */
-    /* 399 */
-    /* 400 */
+  // ---------- Profile & Stats ----------
+  async function loadProfile(uid) {
+    if (!uid) return;
+    currentProfileUid = uid;
+    try {
+      const doc = await db.collection('users').doc(uid).get();
+      if (!doc.exists) {
+        profileName.textContent = 'Unknown user';
+        return;
+      }
+      const data = doc.data();
+      profileName.textContent = data.displayName || 'User';
+      profileUsername.textContent = '@' + (data.username || '');
+      bioInput.value = data.bio || '';
+      profileStats.innerHTML = `
+        <span class="stat"><strong>${data.stats?.uploads||0}</strong> uploads</span>
+        <span class="stat"><strong>${data.stats?.likesReceived||0}</strong> likes</span>
+        <span class="stat"><strong>${data.stats?.followers||0}</strong> followers</span>
+        <span class="stat"><strong>${data.stats?.following||0}</strong> following</span>
+      `;
 
-    /* 401 */
-    /* 402 */
-    /* 403 */
-    /* 404 */
-    /* 405 */
-    /* 406 */
-    /* 407 */
-    /* 408 */
-    /* 409 */
-    /* 410 */
-    /* 411 */
-    /* 412 */
-    /* 413 */
-    /* 414 */
-    /* 415 */
-    /* 416 */
-    /* 417 */
-    /* 418 */
-    /* 419 */
-    /* 420 */
-    /* 421 */
-    /* 422 */
-    /* 423 */
-    /* 424 */
-    /* 425 */
-    /* 426 */
-    /* 427 */
-    /* 428 */
-    /* 429 */
-    /* 430 */
-    /* 431 */
-    /* 432 */
-    /* 433 */
-    /* 434 */
-    /* 435 */
-    /* 436 */
-    /* 437 */
-    /* 438 */
-    /* 439 */
-    /* 440 */
-    /* 441 */
-    /* 442 */
-    /* 443 */
-    /* 444 */
-    /* 445 */
-    /* 446 */
-    /* 447 */
-    /* 448 */
-    /* 449 */
-    /* 450 */
-    /* 451 */
-    /* 452 */
-    /* 453 */
-    /* 454 */
-    /* 455 */
-    /* 456 */
-    /* 457 */
-    /* 458 */
-    /* 459 */
-    /* 460 */
-    /* 461 */
-    /* 462 */
-    /* 463 */
-    /* 464 */
-    /* 465 */
-    /* 466 */
-    /* 467 */
-    /* 468 */
-    /* 469 */
-    /* 470 */
-    /* 471 */
-    /* 472 */
-    /* 473 */
-    /* 474 */
-    /* 475 */
-    /* 476 */
-    /* 477 */
-    /* 478 */
-    /* 479 */
-    /* 480 */
-    /* 481 */
-    /* 482 */
-    /* 483 */
-    /* 484 */
-    /* 485 */
-    /* 486 */
-    /* 487 */
-    /* 488 */
-    /* 489 */
-    /* 490 */
-    /* 491 */
-    /* 492 */
-    /* 493 */
-    /* 494 */
-    /* 495 */
-    /* 496 */
-    /* 497 */
-    /* 498 */
-    /* 499 */
-    /* 500 */
+      // Profile actions (if viewing someone else)
+      profileActions.innerHTML = '';
+      if (currentUser && currentUser.uid !== uid) {
+        const followBtn = document.createElement('button');
+        followBtn.className = 'pill';
+        followBtn.textContent = 'Follow';
+        // check if following
+        const fdoc = await db.collection('users').doc(currentUser.uid).collection('following').doc(uid).get();
+        if (fdoc.exists) followBtn.textContent = 'Unfollow';
+        followBtn.onclick = () => toggleFollow(uid, followBtn);
+        profileActions.appendChild(followBtn);
+      }
 
-    window.addEventListener('load', safeBootstrap);
+      // Load uploads
+      profileVideos.innerHTML = 'Loading...';
+      const q = db.collection('videos').where('ownerUid','==',uid).orderBy('createdAt','desc').limit(50);
+      const snap = await q.get();
+      profileVideos.innerHTML = '';
+      snap.forEach(doc => {
+        const data = doc.data();
+        const card = createVideoCard(doc.id, data);
+        profileVideos.appendChild(card);
+      });
+
+      // Following list
+      const followingSnap = await db.collection('users').doc(uid).collection('following').limit(50).get();
+      profileFollowing.innerHTML = '';
+      for (const f of followingSnap.docs) {
+        const targetUid = f.id;
+        const udoc = await db.collection('users').doc(targetUid).get();
+        if (udoc.exists) profileFollowing.innerHTML += `<div>@${udoc.data().username}</div>`;
+      }
+
+      // Followers list
+      const followersSnap = await db.collection('users').doc(uid).collection('followers').limit(50).get();
+      profileFollowers.innerHTML = '';
+      for (const f of followersSnap.docs) {
+        const followerUid = f.id;
+        const udoc = await db.collection('users').doc(followerUid).get();
+        if (udoc.exists) profileFollowers.innerHTML += `<div>@${udoc.data().username}</div>`;
+      }
+
+    } catch (err) {
+      console.error('Profile load error', err);
+    }
+  }
+
+  // ---------- Settings ----------
+  saveSettingsBtn.onclick = async () => {
+    if (!currentUser) { alert('Sign in'); return; }
+    saveStatus.textContent = 'Saving...';
+    try {
+      await db.collection('users').doc(currentUser.uid).update({ bio: bioInput.value });
+      saveStatus.textContent = 'Saved';
+      setTimeout(()=>saveStatus.textContent='',1200);
+    } catch (err) {
+      saveStatus.textContent = 'Error: ' + err.message;
+    }
+  };
+
+  // ---------- Utilities ----------
+  function escapeHtml(s){ if(!s) return ''; return s.replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]); }
+
+  // Initial view
+  showSection(null);
+
+  // Optional: refresh feed periodically
+  setInterval(()=>{ if (currentUser) loadFeed(); }, 60_000);
+
   </script>
 </body>
 </html>
