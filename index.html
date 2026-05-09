@@ -3,96 +3,195 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Google Login Firebase</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini TikTok Clone</title>
+  <style>
+    body { margin:0; font-family: Arial, sans-serif; background:#000; color:#fff; }
+    .center { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; gap:10px; }
+    input, button { padding:10px; width:250px; border-radius:8px; border:none; }
+    button { cursor:pointer; }
+    #app { display:none; height:100vh; flex-direction:column; }
+    header { padding:10px; display:flex; justify-content:space-between; align-items:center; background:#111; }
+    #feed { flex:1; overflow-y:auto; scroll-snap-type:y mandatory; }
+    .video { height:100vh; scroll-snap-align:start; display:flex; align-items:center; justify-content:center; }
+    video { max-height:90vh; max-width:100%; }
+    .upload { position:fixed; bottom:20px; right:20px; }
+  </style>
 </head>
 <body>
 
-  <h2>Firebase Google Auth</h2>
+<div id="auth" class="center">
+  <h2>Login / Signup</h2>
+  <input id="email" placeholder="Email" />
+  <input id="password" type="password" placeholder="Password" />
+  <input id="username" placeholder="Username" />
+  <button onclick="signup()">Sign Up</button>
+  <button onclick="login()">Login</button>
+</div>
 
-  <button id="google-login">
-    Sign in with Google
-  </button>
+<div id="app">
+  <header>
+    <div id="userDisplay"></div>
+    <button onclick="logout()">Logout</button>
+  </header>
 
-  <button id="logout" style="display:none;">
-    Logout
-  </button>
+  <div id="feed"></div>
 
-  <div id="user-info"></div>
+  <div class="upload">
+    <input type="file" id="file" accept="video/*" />
+    <button onclick="uploadVideo()">Upload</button>
+  </div>
+</div>
 
-  <!-- Firebase SDK -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
 
-    import {
-      getAuth,
-      GoogleAuthProvider,
-      signInWithPopup,
-      signOut,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBXKXlusMoJMH2e3B839xqF-Ii61j8tBo",
+  authDomain: "mbappeout-c0f1c.firebaseapp.com",
+  databaseURL: "https://mbappeout-c0f1c-default-rtdb.firebaseio.com",
+  projectId: "mbappeout-c0f1c",
+  storageBucket: "mbappeout-c0f1c.firebasestorage.app",
+  messagingSenderId: "533365630248",
+  appId: "1:533365630248:web:cbe2abc5bfbdd72c9cdc1d"
+};
 
-    // Your Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyBXKXlusMoJMH2e3B839xqF-Ii61j8tBo",
-      authDomain: "mbappeout-c0f1c.firebaseapp.com",
-      databaseURL: "https://mbappeout-c0f1c-default-rtdb.firebaseio.com",
-      projectId: "mbappeout-c0f1c",
-      storageBucket: "mbappeout-c0f1c.firebasestorage.app",
-      messagingSenderId: "533365630248",
-      appId: "1:533365630248:web:cbe2abc5bfbdd72c9cdc1d",
-      measurementId: "G-RDPM9R9VKK"
-    };
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
+const storage = firebase.storage();
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
+let currentUser = null;
+let currentUsername = null;
 
-    // Auth
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
+function setCookie(name, value) {
+  document.cookie = name + "=" + value + ";path=/";
+}
 
-    const loginBtn = document.getElementById("google-login");
-    const logoutBtn = document.getElementById("logout");
-    const userInfo = document.getElementById("user-info");
+function getCookie(name) {
+  return document.cookie.split('; ').find(row => row.startsWith(name+'='))?.split('=')[1];
+}
 
-    // Google Login
-    loginBtn.addEventListener("click", async () => {
-      try {
-        const result = await signInWithPopup(auth, provider);
+async function signup() {
+  const email = emailEl().value;
+  const password = passwordEl().value;
+  let username = usernameEl().value;
 
-        const user = result.user;
+  if(!username) return alert("Username required");
 
-        console.log("User:", user);
+  username = username.toLowerCase();
 
-      } catch (error) {
-        console.error(error);
-        alert(error.message);
-      }
+  const snap = await db.ref('usernames/' + username).get();
+  if(snap.exists()) {
+    alert("Username already claimed");
+    return;
+  }
+
+  const cred = await auth.createUserWithEmailAndPassword(email, password);
+
+  await db.ref('usernames/' + username).set(cred.user.uid);
+
+  setCookie("username", username);
+
+  currentUser = cred.user;
+  currentUsername = username;
+
+  showApp();
+}
+
+async function login() {
+  const email = emailEl().value;
+  const password = passwordEl().value;
+
+  const cred = await auth.signInWithEmailAndPassword(email, password);
+
+  const snap = await db.ref('usernames').orderByValue().equalTo(cred.user.uid).get();
+
+  let username = null;
+  snap.forEach(s => username = s.key);
+
+  currentUser = cred.user;
+  currentUsername = username;
+
+  setCookie("username", username);
+
+  showApp();
+}
+
+function logout() {
+  auth.signOut();
+  location.reload();
+}
+
+function showApp() {
+  document.getElementById('auth').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('userDisplay').innerText = "@" + currentUsername;
+  loadFeed();
+}
+
+async function uploadVideo() {
+  const file = document.getElementById('file').files[0];
+  if(!file) return;
+
+  const ref = storage.ref('videos/' + Date.now() + file.name);
+  await ref.put(file);
+  const url = await ref.getDownloadURL();
+
+  await db.ref('videos').push({
+    url,
+    user: currentUsername,
+    created: Date.now()
+  });
+
+  loadFeed();
+}
+
+function loadFeed() {
+  const feed = document.getElementById('feed');
+  feed.innerHTML = '';
+
+  db.ref('videos').once('value', snap => {
+    const data = [];
+    snap.forEach(v => data.push(v.val()));
+
+    data.reverse().forEach(v => {
+      const div = document.createElement('div');
+      div.className = 'video';
+
+      div.innerHTML = `
+        <div>
+          <video src="${v.url}" controls autoplay loop></video>
+          <p>@${v.user}</p>
+        </div>
+      `;
+
+      feed.appendChild(div);
     });
+  });
+}
 
-    // Logout
-    logoutBtn.addEventListener("click", async () => {
-      await signOut(auth);
-    });
+function emailEl(){ return document.getElementById('email'); }
+function passwordEl(){ return document.getElementById('password'); }
+function usernameEl(){ return document.getElementById('username'); }
 
-    // Auth State
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        loginBtn.style.display = "none";
-        logoutBtn.style.display = "inline-block";
+// auto login from cookie
+window.onload = async () => {
+  const username = getCookie("username");
+  if(username) currentUsername = username;
 
-        userInfo.innerHTML = `
-          <h3>Welcome ${user.displayName}</h3>
-          <img src="${user.photoURL}" width="100" style="border-radius:50%">
-          <p>${user.email}</p>
-        `;
-      } else {
-        loginBtn.style.display = "inline-block";
-        logoutBtn.style.display = "none";
-        userInfo.innerHTML = "";
-      }
-    });
-  </script>
+  auth.onAuthStateChanged(user => {
+    if(user) {
+      currentUser = user;
+      if(currentUsername) showApp();
+    }
+  });
+};
+</script>
 
 </body>
 </html>
