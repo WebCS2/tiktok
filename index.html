@@ -1,0 +1,98 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Google Login Firebase</title>
+</head>
+<body>
+
+  <h2>Firebase Google Auth</h2>
+
+  <button id="google-login">
+    Sign in with Google
+  </button>
+
+  <button id="logout" style="display:none;">
+    Logout
+  </button>
+
+  <div id="user-info"></div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+    import {
+      getAuth,
+      GoogleAuthProvider,
+      signInWithPopup,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    // Your Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBXKXlusMoJMH2e3B839xqF-Ii61j8tBo",
+      authDomain: "mbappeout-c0f1c.firebaseapp.com",
+      databaseURL: "https://mbappeout-c0f1c-default-rtdb.firebaseio.com",
+      projectId: "mbappeout-c0f1c",
+      storageBucket: "mbappeout-c0f1c.firebasestorage.app",
+      messagingSenderId: "533365630248",
+      appId: "1:533365630248:web:cbe2abc5bfbdd72c9cdc1d",
+      measurementId: "G-RDPM9R9VKK"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+
+    // Auth
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    const loginBtn = document.getElementById("google-login");
+    const logoutBtn = document.getElementById("logout");
+    const userInfo = document.getElementById("user-info");
+
+    // Google Login
+    loginBtn.addEventListener("click", async () => {
+      try {
+        const result = await signInWithPopup(auth, provider);
+
+        const user = result.user;
+
+        console.log("User:", user);
+
+      } catch (error) {
+        console.error(error);
+        alert(error.message);
+      }
+    });
+
+    // Logout
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+    });
+
+    // Auth State
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loginBtn.style.display = "none";
+        logoutBtn.style.display = "inline-block";
+
+        userInfo.innerHTML = `
+          <h3>Welcome ${user.displayName}</h3>
+          <img src="${user.photoURL}" width="100" style="border-radius:50%">
+          <p>${user.email}</p>
+        `;
+      } else {
+        loginBtn.style.display = "inline-block";
+        logoutBtn.style.display = "none";
+        userInfo.innerHTML = "";
+      }
+    });
+  </script>
+
+</body>
+</html>
