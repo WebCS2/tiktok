@@ -21,10 +21,10 @@
       text-align:center;
       overflow:hidden;
 
-      font-family: "Comic Sans MS", "Comic Sans", cursive;
+      font-family: "Comic Sans MS", cursive;
 
-      /* custom cursor */
-      cursor: url("https://th.bing.com/th/id/R.6506b01d700f4f25aa20113de3604318?rik=4EIfxcJq%2b3HgmA&pid=ImgRaw&r=0") 16 16, auto;
+      /* hide default cursor */
+      cursor: none;
 
       background-image:
         linear-gradient(rgba(255,255,255,0.45), rgba(255,255,255,0.45)),
@@ -56,19 +56,17 @@
     }
 
     button{
-      font-family: "Comic Sans MS", "Comic Sans", cursive;
+      font-family: "Comic Sans MS", cursive;
       font-size:1rem;
 
       padding:12px 24px;
-
       border:2px solid black;
       border-radius:10px;
 
       background:white;
       color:black;
 
-      cursor:pointer;
-
+      cursor:none;
       transition:0.2s;
     }
 
@@ -76,6 +74,16 @@
       background:black;
       color:white;
       transform:scale(1.05);
+    }
+
+    /* CUSTOM CURSOR */
+    #customCursor {
+      position: fixed;
+      width: 45px;
+      height: 45px;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
     }
   </style>
 </head>
@@ -96,6 +104,21 @@
       </button>
     </div>
   </div>
+
+  <!-- custom cursor image -->
+  <img
+    id="customCursor"
+    src="https://www.pngkey.com/png/full/21-216857_baldi-hand-cursor-baldis-basics-1st-prize.png"
+  />
+
+  <script>
+    const cursor = document.getElementById("customCursor");
+
+    document.addEventListener("mousemove", (e) => {
+      cursor.style.left = e.clientX + "px";
+      cursor.style.top = e.clientY + "px";
+    });
+  </script>
 
 </body>
 </html>
