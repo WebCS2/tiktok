@@ -1,620 +1,101 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>MiniTik - Single File</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>Baldi Games</title>
+
   <style>
-    /* Minimal styling */
-    :root { --bg:#0f1720; --card:#0b1220; --muted:#9aa4b2; --accent:#ff0057; color-scheme: dark; }
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial;background:linear-gradient(180deg,#071021 0%, #071827 100%);color:#e6eef6}
-    header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(0,0,0,0.2);backdrop-filter:blur(6px)}
-    header h1{margin:0;font-size:18px}
-    nav button{margin-left:8px;padding:6px 10px;border-radius:6px;border:0;background:#0b1220;color:#e6eef6;cursor:pointer}
-    main{padding:16px;max-width:1100px;margin:0 auto}
-    section{margin-top:12px}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
-    .video-card{background:linear-gradient(180deg,#071827,#071827);border:1px solid rgba(255,255,255,0.03);padding:10px;border-radius:10px}
-    video{width:100%;height:auto;border-radius:8px;background:#000}
-    input,textarea,select,button{font:inherit}
-    input,textarea{width:100%;padding:8px;margin:6px 0;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
-    .muted{color:var(--muted);font-size:13px}
-    .row{display:flex;gap:8px;align-items:center}
-    .small{font-size:13px}
-    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6)}
-    .modal .box{background:#071827;padding:16px;border-radius:10px;width:90%;max-width:720px}
-    .hidden{display:none}
-    .pill{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.03);cursor:pointer}
-    .stat{display:inline-block;margin-right:12px}
-    footer{padding:12px;text-align:center;color:var(--muted);font-size:13px}
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    body{
+      height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+      overflow:hidden;
+
+      font-family: "Comic Sans MS", "Comic Sans", cursive;
+
+      /* custom cursor */
+      cursor: url("https://th.bing.com/th/id/R.6506b01d700f4f25aa20113de3604318?rik=4EIfxcJq%2b3HgmA&pid=ImgRaw&r=0") 16 16, auto;
+
+      background-image:
+        linear-gradient(rgba(255,255,255,0.45), rgba(255,255,255,0.45)),
+        url("https://static.miraheze.org/baldisbasicswiki/thumb/9/96/Wall.png/240px-Wall.png");
+
+      background-repeat: repeat;
+      background-size: 240px 240px;
+    }
+
+    .content{
+      color:black;
+    }
+
+    h1{
+      font-size:2.5rem;
+      margin-bottom:10px;
+    }
+
+    p{
+      font-size:1.1rem;
+      margin-bottom:20px;
+    }
+
+    .buttons{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      align-items:center;
+    }
+
+    button{
+      font-family: "Comic Sans MS", "Comic Sans", cursive;
+      font-size:1rem;
+
+      padding:12px 24px;
+
+      border:2px solid black;
+      border-radius:10px;
+
+      background:white;
+      color:black;
+
+      cursor:pointer;
+
+      transition:0.2s;
+    }
+
+    button:hover{
+      background:black;
+      color:white;
+      transform:scale(1.05);
+    }
   </style>
 </head>
+
 <body>
-  <header>
-    <h1>MiniTik</h1>
-    <nav>
-      <button id="btn-feed">FYP</button>
-      <button id="btn-upload">Upload</button>
-      <button id="btn-profile">Profile</button>
-      <button id="btn-settings">Settings</button>
-      <button id="btn-signout" class="hidden">Sign out</button>
-    </nav>
-  </header>
 
-  <main>
-    <!-- Auth -->
-    <section id="auth-section">
-      <div style="display:flex;gap:16px;flex-wrap:wrap">
-        <div style="min-width:280px;max-width:420px">
-          <h3>Sign up</h3>
-          <input id="signup-name" placeholder="Display name" />
-          <input id="signup-username" placeholder="Username (unique, case-insensitive)" />
-          <input id="signup-email" placeholder="Email" />
-          <input id="signup-password" type="password" placeholder="Password" />
-          <button id="signup-btn" class="pill">Create account</button>
-        </div>
-        <div style="min-width:280px;max-width:420px">
-          <h3>Sign in</h3>
-          <input id="signin-email" placeholder="Email" />
-          <input id="signin-password" type="password" placeholder="Password" />
-          <button id="signin-btn" class="pill">Sign in</button>
-        </div>
-      </div>
-    </section>
+  <div class="content">
+    <h1>Welcome to Baldi Games</h1>
+    <p>Play Baldi games here</p>
 
-    <!-- Feed -->
-    <section id="feed-section" class="hidden">
-      <h3>For You</h3>
-      <div id="feed" class="grid"></div>
-    </section>
+    <div class="buttons">
+      <button onclick="window.location.href='/baldi'">
+        Play Baldi Games
+      </button>
 
-    <!-- Upload -->
-    <section id="upload-section" class="hidden">
-      <h3>Upload Video</h3>
-      <input id="video-file" type="file" accept="video/*" />
-      <input id="video-title" placeholder="Title" />
-      <textarea id="video-caption" placeholder="Caption"></textarea>
-      <div class="row">
-        <button id="upload-btn" class="pill">Upload</button>
-        <div id="upload-progress" class="muted small"></div>
-      </div>
-    </section>
-
-    <!-- Profile -->
-    <section id="profile-section" class="hidden">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <h3 id="profile-name">Profile</h3>
-          <div id="profile-username" class="muted small"></div>
-        </div>
-        <div id="profile-actions"></div>
-      </div>
-
-      <div id="profile-stats" class="muted small" style="margin-top:8px"></div>
-
-      <h4 style="margin-top:12px">Your uploads</h4>
-      <div id="profile-videos" class="grid"></div>
-
-      <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
-        <div>
-          <h4>Following</h4>
-          <div id="profile-following" class="muted small"></div>
-        </div>
-        <div>
-          <h4>Followers</h4>
-          <div id="profile-followers" class="muted small"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Settings -->
-    <section id="settings-section" class="hidden">
-      <h3>Settings</h3>
-      <label class="muted small">Bio</label>
-      <textarea id="bio" placeholder="Bio"></textarea>
-      <div class="row">
-        <button id="save-settings" class="pill">Save</button>
-        <div id="save-status" class="muted small"></div>
-      </div>
-    </section>
-
-    <!-- Comments modal -->
-    <div id="comment-modal" class="modal hidden">
-      <div class="box">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <h4>Comments</h4>
-          <button id="close-comments" class="pill">Close</button>
-        </div>
-        <div id="comments-list" style="max-height:320px;overflow:auto;margin-top:8px"></div>
-        <textarea id="comment-text" placeholder="Write a comment"></textarea>
-        <div class="row" style="margin-top:8px">
-          <button id="post-comment" class="pill">Post</button>
-          <div id="comment-status" class="muted small"></div>
-        </div>
-      </div>
+      <button>
+        Put your own game
+      </button>
     </div>
+  </div>
 
-  </main>
-
-  <footer>MiniTik demo • Make sure Firebase services are enabled for this project</footer>
-
-  <!-- Firebase compat libs -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-
-  <script>
-  // ---------- Firebase config (user-provided) ----------
-  const firebaseConfig = {
-    apiKey: "AIzaSyBXKXlusMoJMH2e3B839xqF-Ii61j8tBo",
-    authDomain: "mbappeout-c0f1c.firebaseapp.com",
-    databaseURL: "https://mbappeout-c0f1c-default-rtdb.firebaseio.com",
-    projectId: "mbappeout-c0f1c",
-    storageBucket: "mbappeout-c0f1c.firebasestorage.app",
-    messagingSenderId: "533365630248",
-    appId: "1:533365630248:web:cbe2abc5bfbdd72c9cdc1d",
-    measurementId: "G-RDPM9R9VKK"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-  const storage = firebase.storage();
-
-  // ---------- UI refs ----------
-  const btnFeed = document.getElementById('btn-feed');
-  const btnUpload = document.getElementById('btn-upload');
-  const btnProfile = document.getElementById('btn-profile');
-  const btnSettings = document.getElementById('btn-settings');
-  const btnSignout = document.getElementById('btn-signout');
-
-  const authSection = document.getElementById('auth-section');
-  const feedSection = document.getElementById('feed-section');
-  const uploadSection = document.getElementById('upload-section');
-  const profileSection = document.getElementById('profile-section');
-  const settingsSection = document.getElementById('settings-section');
-
-  const feedDiv = document.getElementById('feed');
-  const uploadBtn = document.getElementById('upload-btn');
-  const videoFileInput = document.getElementById('video-file');
-  const uploadProgress = document.getElementById('upload-progress');
-
-  const profileName = document.getElementById('profile-name');
-  const profileUsername = document.getElementById('profile-username');
-  const profileVideos = document.getElementById('profile-videos');
-  const profileStats = document.getElementById('profile-stats');
-  const profileFollowing = document.getElementById('profile-following');
-  const profileFollowers = document.getElementById('profile-followers');
-  const profileActions = document.getElementById('profile-actions');
-
-  const bioInput = document.getElementById('bio');
-  const saveSettingsBtn = document.getElementById('save-settings');
-  const saveStatus = document.getElementById('save-status');
-
-  const commentModal = document.getElementById('comment-modal');
-  const commentsList = document.getElementById('comments-list');
-  const commentText = document.getElementById('comment-text');
-  const postCommentBtn = document.getElementById('post-comment');
-  const commentStatus = document.getElementById('comment-status');
-  const closeCommentsBtn = document.getElementById('close-comments');
-
-  // Auth forms
-  document.getElementById('signup-btn').onclick = signup;
-  document.getElementById('signin-btn').onclick = signin;
-
-  // Navigation
-  btnFeed.onclick = () => showSection('feed');
-  btnUpload.onclick = () => showSection('upload');
-  btnProfile.onclick = () => showSection('profile');
-  btnSettings.onclick = () => showSection('settings');
-  btnSignout.onclick = () => auth.signOut();
-
-  // Comments modal handlers
-  closeCommentsBtn.onclick = () => { commentModal.classList.add('hidden'); currentVideoForComments = null; };
-  postCommentBtn.onclick = postComment;
-
-  let currentUser = null;
-  let currentProfileUid = null;
-  let currentVideoForComments = null;
-
-  function showSection(name) {
-    authSection.classList.add('hidden');
-    feedSection.classList.add('hidden');
-    uploadSection.classList.add('hidden');
-    profileSection.classList.add('hidden');
-    settingsSection.classList.add('hidden');
-
-    if (!currentUser) {
-      authSection.classList.remove('hidden');
-      return;
-    }
-    if (name === 'feed') feedSection.classList.remove('hidden');
-    if (name === 'upload') uploadSection.classList.remove('hidden');
-    if (name === 'profile') profileSection.classList.remove('hidden');
-    if (name === 'settings') settingsSection.classList.remove('hidden');
-  }
-
-  // ---------- Auth ----------
-  async function signup() {
-    const displayName = document.getElementById('signup-name').value.trim();
-    const username = document.getElementById('signup-username').value.trim();
-    const email = document.getElementById('signup-email').value.trim();
-    const password = document.getElementById('signup-password').value;
-    if (!displayName || !username || !email || !password) { alert('Fill all fields'); return; }
-    try {
-      const userCred = await auth.createUserWithEmailAndPassword(email, password);
-      const uid = userCred.user.uid;
-      const username_lc = username.toLowerCase();
-
-      const usernameRef = db.collection('usernames').doc(username_lc);
-      await db.runTransaction(async (tx) => {
-        const doc = await tx.get(usernameRef);
-        if (doc.exists) throw new Error('Username already taken');
-        tx.set(usernameRef, { uid, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-        const userRef = db.collection('users').doc(uid);
-        tx.set(userRef, {
-          displayName,
-          username,
-          username_lc,
-          email,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          bio: '',
-          stats: { uploads: 0, likesReceived: 0, followers: 0, following: 0 }
-        });
-      });
-
-      await userCred.user.updateProfile({ displayName });
-      alert('Account created');
-    } catch (err) {
-      // If auth user created but transaction failed, you may want to delete the auth user in production.
-      alert('Sign up error: ' + err.message);
-    }
-  }
-
-  async function signin() {
-    const email = document.getElementById('signin-email').value.trim();
-    const password = document.getElementById('signin-password').value;
-    try {
-      await auth.signInWithEmailAndPassword(email, password);
-    } catch (err) {
-      alert('Sign in error: ' + err.message);
-    }
-  }
-
-  auth.onAuthStateChanged(async (user) => {
-    currentUser = user;
-    if (user) {
-      btnSignout.classList.remove('hidden');
-      authSection.classList.add('hidden');
-      showSection('feed');
-      await loadFeed();
-      await loadProfile(user.uid);
-    } else {
-      btnSignout.classList.add('hidden');
-      authSection.classList.remove('hidden');
-      feedSection.classList.add('hidden');
-      uploadSection.classList.add('hidden');
-      profileSection.classList.add('hidden');
-      settingsSection.classList.add('hidden');
-    }
-  });
-
-  // ---------- Upload ----------
-  uploadBtn.onclick = async () => {
-    if (!currentUser) { alert('Sign in first'); return; }
-    const file = videoFileInput.files[0];
-    const title = document.getElementById('video-title').value || '';
-    const caption = document.getElementById('video-caption').value || '';
-    if (!file) { alert('Choose a video'); return; }
-
-    const uid = currentUser.uid;
-    const videoId = db.collection('videos').doc().id;
-    const storagePath = `videos/${uid}/${videoId}_${Date.now()}_${file.name}`;
-    const storageRef = storage.ref(storagePath);
-    const uploadTask = storageRef.put(file);
-
-    uploadProgress.textContent = 'Uploading... 0%';
-    uploadTask.on('state_changed', (snap) => {
-      const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
-      uploadProgress.textContent = `Uploading... ${pct}%`;
-    }, (err) => {
-      alert('Upload failed: ' + err.message);
-    }, async () => {
-      const url = await storageRef.getDownloadURL();
-      const userDoc = await db.collection('users').doc(uid).get();
-      const ownerUsername = userDoc.exists ? userDoc.data().username : 'unknown';
-      await db.collection('videos').doc(videoId).set({
-        ownerUid: uid,
-        ownerUsername,
-        title,
-        caption,
-        storagePath,
-        videoUrl: url,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        likesCount: 0,
-        commentsCount: 0,
-        views: 0
-      });
-      await db.collection('users').doc(uid).update({
-        'stats.uploads': firebase.firestore.FieldValue.increment(1)
-      });
-      uploadProgress.textContent = 'Upload complete';
-      videoFileInput.value = '';
-      document.getElementById('video-title').value = '';
-      document.getElementById('video-caption').value = '';
-      await loadFeed();
-      await loadProfile(uid);
-    });
-  };
-
-  // ---------- Feed ----------
-  async function loadFeed() {
-    feedDiv.innerHTML = 'Loading...';
-    try {
-      const q = db.collection('videos').orderBy('createdAt', 'desc').limit(50);
-      const snap = await q.get();
-      feedDiv.innerHTML = '';
-      snap.forEach(doc => {
-        const data = doc.data();
-        const id = doc.id;
-        const card = createVideoCard(id, data);
-        feedDiv.appendChild(card);
-      });
-    } catch (err) {
-      feedDiv.innerHTML = 'Failed to load feed: ' + err.message;
-    }
-  }
-
-  function createVideoCard(id, data) {
-    const div = document.createElement('div');
-    div.className = 'video-card';
-
-    const video = document.createElement('video');
-    video.src = data.videoUrl;
-    video.controls = true;
-    video.preload = 'metadata';
-    div.appendChild(video);
-
-    const title = document.createElement('div');
-    title.textContent = data.title || '';
-    title.style.fontWeight = '600';
-    title.style.marginTop = '8px';
-    div.appendChild(title);
-
-    const owner = document.createElement('div');
-    owner.textContent = '@' + (data.ownerUsername || 'unknown');
-    owner.className = 'muted small';
-    owner.style.marginTop = '4px';
-    div.appendChild(owner);
-
-    const caption = document.createElement('div');
-    caption.textContent = data.caption || '';
-    caption.className = 'muted small';
-    caption.style.marginTop = '6px';
-    div.appendChild(caption);
-
-    const row = document.createElement('div');
-    row.className = 'row';
-    row.style.marginTop = '8px';
-
-    const likeBtn = document.createElement('button');
-    likeBtn.className = 'pill';
-    likeBtn.textContent = `❤ ${data.likesCount || 0}`;
-    likeBtn.onclick = () => toggleLike(id, likeBtn);
-    row.appendChild(likeBtn);
-
-    const commentBtn = document.createElement('button');
-    commentBtn.className = 'pill';
-    commentBtn.textContent = `💬 ${data.commentsCount || 0}`;
-    commentBtn.onclick = () => openComments(id);
-    row.appendChild(commentBtn);
-
-    const followBtn = document.createElement('button');
-    followBtn.className = 'pill';
-    followBtn.textContent = `Follow`;
-    followBtn.onclick = () => toggleFollow(data.ownerUid, followBtn);
-    row.appendChild(followBtn);
-
-    div.appendChild(row);
-    return div;
-  }
-
-  // ---------- Likes ----------
-  async function toggleLike(videoId, btnEl) {
-    if (!currentUser) { alert('Sign in'); return; }
-    const uid = currentUser.uid;
-    const likeRef = db.collection('videos').doc(videoId).collection('likes').doc(uid);
-    const videoRef = db.collection('videos').doc(videoId);
-    try {
-      const likeDoc = await likeRef.get();
-      if (likeDoc.exists) {
-        await likeRef.delete();
-        await videoRef.update({ likesCount: firebase.firestore.FieldValue.increment(-1) });
-        // decrement owner's likesReceived
-        const videoDoc = await videoRef.get();
-        const ownerUid = videoDoc.data().ownerUid;
-        await db.collection('users').doc(ownerUid).update({ 'stats.likesReceived': firebase.firestore.FieldValue.increment(-1) });
-      } else {
-        await likeRef.set({ createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-        await videoRef.update({ likesCount: firebase.firestore.FieldValue.increment(1) });
-        const videoDoc = await videoRef.get();
-        const ownerUid = videoDoc.data().ownerUid;
-        await db.collection('users').doc(ownerUid).update({ 'stats.likesReceived': firebase.firestore.FieldValue.increment(1) });
-      }
-      // refresh feed counts quickly
-      await loadFeed();
-      if (currentProfileUid) await loadProfile(currentProfileUid);
-    } catch (err) {
-      alert('Like error: ' + err.message);
-    }
-  }
-
-  // ---------- Comments ----------
-  async function openComments(videoId) {
-    currentVideoForComments = videoId;
-    commentsList.innerHTML = 'Loading...';
-    commentModal.classList.remove('hidden');
-    try {
-      const snap = await db.collection('videos').doc(videoId).collection('comments').orderBy('createdAt','asc').get();
-      commentsList.innerHTML = '';
-      snap.forEach(doc => {
-        const c = doc.data();
-        const el = document.createElement('div');
-        el.style.padding = '8px 0';
-        el.innerHTML = `<strong>@${escapeHtml(c.username || 'anon')}</strong> <div class="muted small">${escapeHtml(c.text)}</div>`;
-        commentsList.appendChild(el);
-      });
-    } catch (err) {
-      commentsList.innerHTML = 'Failed to load comments: ' + err.message;
-    }
-  }
-
-  async function postComment() {
-    if (!currentUser) { alert('Sign in'); return; }
-    if (!currentVideoForComments) return;
-    const text = commentText.value.trim();
-    if (!text) return;
-    postCommentBtn.disabled = true;
-    commentStatus.textContent = 'Posting...';
-    try {
-      const userDoc = await db.collection('users').doc(currentUser.uid).get();
-      const username = userDoc.exists ? userDoc.data().username : 'anon';
-      const commentRef = db.collection('videos').doc(currentVideoForComments).collection('comments').doc();
-      await commentRef.set({
-        uid: currentUser.uid,
-        username,
-        text,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      await db.collection('videos').doc(currentVideoForComments).update({ commentsCount: firebase.firestore.FieldValue.increment(1) });
-      commentText.value = '';
-      commentStatus.textContent = 'Posted';
-      await openComments(currentVideoForComments);
-      await loadFeed();
-    } catch (err) {
-      commentStatus.textContent = 'Error: ' + err.message;
-    } finally {
-      postCommentBtn.disabled = false;
-      setTimeout(()=>commentStatus.textContent='',1200);
-    }
-  }
-
-  // ---------- Follow ----------
-  async function toggleFollow(targetUid, btnEl) {
-    if (!currentUser) { alert('Sign in'); return; }
-    if (currentUser.uid === targetUid) { alert("You can't follow yourself"); return; }
-    const myFollowingRef = db.collection('users').doc(currentUser.uid).collection('following').doc(targetUid);
-    const theirFollowersRef = db.collection('users').doc(targetUid).collection('followers').doc(currentUser.uid);
-    try {
-      const doc = await myFollowingRef.get();
-      if (doc.exists) {
-        await myFollowingRef.delete();
-        await theirFollowersRef.delete();
-        await db.collection('users').doc(currentUser.uid).update({ 'stats.following': firebase.firestore.FieldValue.increment(-1) });
-        await db.collection('users').doc(targetUid).update({ 'stats.followers': firebase.firestore.FieldValue.increment(-1) });
-      } else {
-        await myFollowingRef.set({ createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-        await theirFollowersRef.set({ createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-        await db.collection('users').doc(currentUser.uid).update({ 'stats.following': firebase.firestore.FieldValue.increment(1) });
-        await db.collection('users').doc(targetUid).update({ 'stats.followers': firebase.firestore.FieldValue.increment(1) });
-      }
-      await loadProfile(currentProfileUid || currentUser.uid);
-      await loadFeed();
-    } catch (err) {
-      alert('Follow error: ' + err.message);
-    }
-  }
-
-  // ---------- Profile & Stats ----------
-  async function loadProfile(uid) {
-    if (!uid) return;
-    currentProfileUid = uid;
-    try {
-      const doc = await db.collection('users').doc(uid).get();
-      if (!doc.exists) {
-        profileName.textContent = 'Unknown user';
-        return;
-      }
-      const data = doc.data();
-      profileName.textContent = data.displayName || 'User';
-      profileUsername.textContent = '@' + (data.username || '');
-      bioInput.value = data.bio || '';
-      profileStats.innerHTML = `
-        <span class="stat"><strong>${data.stats?.uploads||0}</strong> uploads</span>
-        <span class="stat"><strong>${data.stats?.likesReceived||0}</strong> likes</span>
-        <span class="stat"><strong>${data.stats?.followers||0}</strong> followers</span>
-        <span class="stat"><strong>${data.stats?.following||0}</strong> following</span>
-      `;
-
-      // Profile actions (if viewing someone else)
-      profileActions.innerHTML = '';
-      if (currentUser && currentUser.uid !== uid) {
-        const followBtn = document.createElement('button');
-        followBtn.className = 'pill';
-        followBtn.textContent = 'Follow';
-        // check if following
-        const fdoc = await db.collection('users').doc(currentUser.uid).collection('following').doc(uid).get();
-        if (fdoc.exists) followBtn.textContent = 'Unfollow';
-        followBtn.onclick = () => toggleFollow(uid, followBtn);
-        profileActions.appendChild(followBtn);
-      }
-
-      // Load uploads
-      profileVideos.innerHTML = 'Loading...';
-      const q = db.collection('videos').where('ownerUid','==',uid).orderBy('createdAt','desc').limit(50);
-      const snap = await q.get();
-      profileVideos.innerHTML = '';
-      snap.forEach(doc => {
-        const data = doc.data();
-        const card = createVideoCard(doc.id, data);
-        profileVideos.appendChild(card);
-      });
-
-      // Following list
-      const followingSnap = await db.collection('users').doc(uid).collection('following').limit(50).get();
-      profileFollowing.innerHTML = '';
-      for (const f of followingSnap.docs) {
-        const targetUid = f.id;
-        const udoc = await db.collection('users').doc(targetUid).get();
-        if (udoc.exists) profileFollowing.innerHTML += `<div>@${udoc.data().username}</div>`;
-      }
-
-      // Followers list
-      const followersSnap = await db.collection('users').doc(uid).collection('followers').limit(50).get();
-      profileFollowers.innerHTML = '';
-      for (const f of followersSnap.docs) {
-        const followerUid = f.id;
-        const udoc = await db.collection('users').doc(followerUid).get();
-        if (udoc.exists) profileFollowers.innerHTML += `<div>@${udoc.data().username}</div>`;
-      }
-
-    } catch (err) {
-      console.error('Profile load error', err);
-    }
-  }
-
-  // ---------- Settings ----------
-  saveSettingsBtn.onclick = async () => {
-    if (!currentUser) { alert('Sign in'); return; }
-    saveStatus.textContent = 'Saving...';
-    try {
-      await db.collection('users').doc(currentUser.uid).update({ bio: bioInput.value });
-      saveStatus.textContent = 'Saved';
-      setTimeout(()=>saveStatus.textContent='',1200);
-    } catch (err) {
-      saveStatus.textContent = 'Error: ' + err.message;
-    }
-  };
-
-  // ---------- Utilities ----------
-  function escapeHtml(s){ if(!s) return ''; return s.replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]); }
-
-  // Initial view
-  showSection(null);
-
-  // Optional: refresh feed periodically
-  setInterval(()=>{ if (currentUser) loadFeed(); }, 60_000);
-
-  </script>
 </body>
 </html>
